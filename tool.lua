@@ -6,10 +6,10 @@ minetest.register_tool("pick_and_place:placer", {
     range = 0,
     on_use = function(itemstack, player)
     end,
+    on_focus = function(itemstack, player)
+    end,
+    on_step = function(itemstack, player)
+    end,
+    on_blur = function(player)
+    end
 })
-
-function pick_and_place.on_step()
-end
-
-function pick_and_place.on_blur()
-end
