@@ -36,6 +36,8 @@ Create a template for frequent reuse
 
 The schematic data is stored in the tool and may not scale well beyond a certain size
 
+Does not handle metadata currently
+
 # Licenses
 
 * Code: `MIT`
