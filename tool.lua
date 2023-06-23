@@ -7,13 +7,16 @@ minetest.register_tool("pick_and_place:placer", {
     on_use = function(itemstack, player)
         print("on_use: " .. itemstack:get_name() .. ", " .. player:get_player_name())
     end,
-    on_focus = function(itemstack, player)
-        print("on_focus: " .. itemstack:get_name() .. ", " .. player:get_player_name())
+    on_secondary_use = function(itemstack, player)
+        print("on_secondary_use: " .. itemstack:get_name() .. ", " .. player:get_player_name())
     end,
-    on_step = function(itemstack, player)
-        print("on_step: " .. itemstack:get_name() .. ", " .. player:get_player_name())
+    on_step = function(_, player)
+        local playername = player:get_player_name()
+        local pointed_pos = pick_and_place.get_pointed_position(player)
+        pick_and_place.show_preview(playername, "pick_and_place_plus.png", "#00ff00", pointed_pos, vector.add(pointed_pos, {x=1, y=2, z=3}))
     end,
-    on_blur = function(itemstack, player)
-        print("on_blur: " .. itemstack:get_name() .. ", " .. player:get_player_name())
+    on_deselect = function(_, player)
+        local playername = player:get_player_name()
+        pick_and_place.clear_preview(playername)
     end
 })
