@@ -29,7 +29,7 @@ Create a template for frequent reuse
 * Use the white `pick_and_place:configure` tool to select an area for your template
 * First click for first position and second click for the second position
 * This will create "handle" nodes on every corner of the build
-* Right-click the corners to create a placement-tool for the template
+* Right-click one of corners to create a placement-tool for the template
 * Place as needed
 
 # Limitations
