@@ -21,9 +21,7 @@ minetest.register_tool("pick_and_place:configure", {
             pos1[playername] = pointed_pos
         end
     end,
-    on_secondary_use = function(itemstack, player)
-        print("on_secondary_use: " .. itemstack:get_name() .. ", " .. player:get_player_name())
-
+    on_secondary_use = function(_, player)
         local playername = player:get_player_name()
         pos1[playername] = nil
     end,
