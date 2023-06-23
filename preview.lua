@@ -6,6 +6,8 @@ function pick_and_place.show_preview(playername, texture, color, pos1, pos2)
 	pos2 = pos2 or pos1
 	texture = texture .. "^[colorize:" .. color
 
+	pos1, pos2 = pick_and_place.sort_pos(pos1, pos2)
+
 	local key =
 		minetest.pos_to_string(pos1) .. "/" ..
 		minetest.pos_to_string(pos2) .. "/" ..
@@ -21,7 +23,7 @@ function pick_and_place.show_preview(playername, texture, color, pos1, pos2)
 
 	local visual_size = vector.add(vector.subtract(pos2, pos1), 1)
 	local offset = vector.divide(vector.subtract(pos2, pos1), 2)
-	local origin = vector.subtract(pos1, offset)
+	local origin = vector.subtract(pos2, offset)
 
 	local ent = pick_and_place.add_entity(origin, key)
 	ent:set_properties({

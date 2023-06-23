@@ -8,6 +8,7 @@ minetest.register_entity("pick_and_place:display", {
         static_save = false,
 		collisionbox = {0, 0, 0, 0, 0, 0},
 		visual = "cube",
+		backface_culling = false,
 		visual_size = {x=1, y=1, z=1},
 		glow = 10
 	},
