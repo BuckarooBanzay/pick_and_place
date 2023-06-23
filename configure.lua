@@ -24,8 +24,13 @@ function pick_and_place.configure(pos1, pos2)
         if node.name == "air" then
             minetest.set_node(cpos, { name = "pick_and_place:handle" })
             local meta = minetest.get_meta(cpos)
-            meta:set_string("pos1", minetest.pos_to_string(pos1))
-            meta:set_string("pos2", minetest.pos_to_string(pos2))
+
+            -- relative positions
+            local rel_pos1 = vector.subtract(pos1, cpos)
+            local rel_pos2 = vector.subtract(pos2, cpos)
+
+            meta:set_string("pos1", minetest.pos_to_string(rel_pos1))
+            meta:set_string("pos2", minetest.pos_to_string(rel_pos2))
         end
     end
 end

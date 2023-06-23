@@ -6,7 +6,10 @@ minetest.register_tool("pick_and_place:place", {
     on_use = function(itemstack, player)
         print("on_use: " .. itemstack:get_name() .. ", " .. player:get_player_name())
 
-
+        local pointed_pos = pick_and_place.get_pointed_position(player)
+        local meta = itemstack:get_meta()
+        local schematic = meta:get_string("schematic")
+        pick_and_place.deserialize(pointed_pos, schematic)
     end,
     on_secondary_use = function(itemstack, player)
         print("on_secondary_use: " .. itemstack:get_name() .. ", " .. player:get_player_name())

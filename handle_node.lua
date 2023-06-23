@@ -5,14 +5,24 @@ local function on_rightclick(pos, _, _, itemstack)
 	end
 
 	local meta = minetest.get_meta(pos)
-	local pos1 = minetest.string_to_pos(meta:get_string("pos1"))
-	local pos2 = minetest.string_to_pos(meta:get_string("pos2"))
-	local size = vector.add(vector.subtract(pos2, pos1), 1)
 
+	-- relative positions
+	local rel_pos1 = minetest.string_to_pos(meta:get_string("pos1"))
+	local rel_pos2 = minetest.string_to_pos(meta:get_string("pos2"))
+
+	-- absolute positions
+	local pos1 = vector.add(pos, rel_pos1)
+	local pos2 = vector.add(pos, rel_pos2)
+
+	local size = vector.add(vector.subtract(pos2, pos1), 1)
 
 	local tool = ItemStack("pick_and_place:place 1")
 	local tool_meta = tool:get_meta()
 	tool_meta:set_string("size", minetest.pos_to_string(size))
+
+	-- serialize schematic
+	local schematic = pick_and_place.serialize(pos1, pos2)
+	tool_meta:set_string("schematic", schematic)
 
 	return tool
 end
