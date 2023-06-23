@@ -18,7 +18,3 @@ function pick_and_place.sort_pos(pos1, pos2)
         end
         return pos1, pos2
 end
-
-
-function pick_and_place.rotate_size(size, rotation)
-end

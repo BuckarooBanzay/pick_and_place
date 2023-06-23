@@ -48,15 +48,6 @@ function pick_and_place.serialize(pos1, pos2)
     local compressed_data = minetest.compress(serialized_data, "deflate")
     local encoded_data = minetest.encode_base64(compressed_data)
 
-    -- TODO
-    print(dump({
-        fn = "pick_and_place.serialize",
-        size = data.size,
-        serialized_data_len = #serialized_data,
-        compressed_data_len = #compressed_data,
-        encoded_data_len = #encoded_data
-    }))
-
     return encoded_data
 end
 

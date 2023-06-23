@@ -3,17 +3,14 @@ minetest.register_tool("pick_and_place:place", {
     inventory_image = "pick_and_place_plus.png^[colorize:#0000ff",
     stack_max = 1,
     range = 0,
+    groups = {
+        not_in_creative_inventory = 1
+    },
     on_use = function(itemstack, player)
-        print("on_use: " .. itemstack:get_name() .. ", " .. player:get_player_name())
-
         local pointed_pos = pick_and_place.get_pointed_position(player)
         local meta = itemstack:get_meta()
         local schematic = meta:get_string("schematic")
         pick_and_place.deserialize(pointed_pos, schematic)
-    end,
-    on_secondary_use = function(itemstack, player)
-        print("on_secondary_use: " .. itemstack:get_name() .. ", " .. player:get_player_name())
-
     end,
     on_step = function(itemstack, player)
         local playername = player:get_player_name()
