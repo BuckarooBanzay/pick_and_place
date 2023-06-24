@@ -22,6 +22,8 @@ Simple copy+paste operation
 * This will convert the pick-tool to a blue `pick_and_place:place` tool in your inventory
 * Use the place-tool to place your build anywhere in the world with the help of the preview-overlay
 
+**Pro-tip**: hold the `aux` key to switch to removal-mode
+
 ## Configure a template area
 
 Create a template for frequent reuse
