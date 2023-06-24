@@ -7,21 +7,25 @@ minetest.register_tool("pick_and_place:place", {
         not_in_creative_inventory = 1
     },
     on_use = function(itemstack, player)
-        local pointed_pos = pick_and_place.get_pointed_position(player)
         local meta = itemstack:get_meta()
         local schematic = meta:get_string("schematic")
-        pick_and_place.deserialize(pointed_pos, schematic)
+        local size = minetest.string_to_pos(meta:get_string("size"))
+        local distance = vector.distance(vector.new(), size)
+
+        local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance))
+        pick_and_place.deserialize(pos1, schematic)
     end,
     on_step = function(itemstack, player)
         local playername = player:get_player_name()
-        local pointed_pos = pick_and_place.get_pointed_position(player)
 
         local meta = itemstack:get_meta()
         local size = minetest.string_to_pos(meta:get_string("size"))
+        local distance = vector.distance(vector.new(), size)
 
-        local pos2 = vector.add(pointed_pos, vector.subtract(size, 1))
+        local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance))
+        local pos2 = vector.add(pos1, vector.subtract(size, 1))
 
-        pick_and_place.show_preview(playername, "pick_and_place_plus.png", "#0000ff", pointed_pos, pos2)
+        pick_and_place.show_preview(playername, "pick_and_place_plus.png", "#0000ff", pos1, pos2)
     end,
     on_deselect = function(_, player)
         local playername = player:get_player_name()
