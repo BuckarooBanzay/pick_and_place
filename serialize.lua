@@ -54,16 +54,32 @@ function pick_and_place.serialize(pos1, pos2)
         nodeid_mapping[nodeid] = name
     end
 
-    -- TODO: metadata
+    -- store metadata
+    local nodes_with_meta = minetest.find_nodes_with_meta(pos1, pos2)
+    for _, pos in ipairs(nodes_with_meta) do
+        local rel_pos = vector.subtract(pos, pos1)
+        local meta = minetest.get_meta(pos)
+        local meta_table = meta:to_table()
 
-    local size = vector.add(vector.subtract(pos2, pos1), 1)
+        -- Convert metadata item stacks to item strings
+        for _, invlist in pairs(meta_table.inventory) do
+            for index = 1, #invlist do
+                local itemstack = invlist[index]
+                if itemstack.to_string then
+                    invlist[index] = itemstack:to_string()
+                end
+            end
+        end
+
+        metadata[minetest.pos_to_string(rel_pos)] = meta_table
+    end
 
     local data = {
         version = 1,
         mapdata = table.concat(mapdata),
         metadata = metadata,
         nodeid_mapping = nodeid_mapping,
-        size = size
+        size = vector.add(vector.subtract(pos2, pos1), 1)
     }
 
     local serialized_data = minetest.serialize(data)
@@ -123,6 +139,14 @@ function pick_and_place.deserialize(pos1, encoded_data)
         j = j + 1
     end
     end
+    end
+
+    -- metadata
+    for pos_str, meta_table in pairs(data.metadata) do
+        local pos = minetest.string_to_pos(pos_str)
+        local abs_pos = vector.add(pos1, pos)
+        local meta = minetest.get_meta(abs_pos)
+        meta:from_table(meta_table)
     end
 
     manip:set_data(node_data)

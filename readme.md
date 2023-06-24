@@ -32,11 +32,13 @@ Create a template for frequent reuse
 * Right-click one of corners to create a placement-tool for the template
 * Place as needed
 
+# Portability
+
+The placement tool can be shared across worlds if the nodes are available there.
+
 # Limitations
 
 The schematic data is stored in the tool and may not scale well beyond a certain size
-
-Does not handle metadata currently
 
 # Licenses
 
