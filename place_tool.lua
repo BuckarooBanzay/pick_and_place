@@ -12,7 +12,7 @@ minetest.register_tool("pick_and_place:place", {
         local size = minetest.string_to_pos(meta:get_string("size"))
         local distance = vector.distance(vector.new(), size)
 
-        local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance))
+        local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance) + 5)
         local success, msg = pick_and_place.deserialize(pos1, schematic)
         if not success then
             minetest.chat_send_player(player:get_player_name(), "Placement error: " .. msg)
@@ -25,7 +25,7 @@ minetest.register_tool("pick_and_place:place", {
         local size = minetest.string_to_pos(meta:get_string("size"))
         local distance = vector.distance(vector.new(), size)
 
-        local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance))
+        local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance) + 5)
         local pos2 = vector.add(pos1, vector.subtract(size, 1))
 
         pick_and_place.show_preview(playername, "pick_and_place_plus.png", "#0000ff", pos1, pos2)
