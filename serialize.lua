@@ -1,6 +1,8 @@
 
 local char, byte = string.char, string.byte
 
+local air_cid = minetest.get_content_id("air")
+
 local function encode_uint16(int)
 	local a, b = int % 0x100, int / 0x100
 	return char(a, b)
@@ -132,11 +134,13 @@ function pick_and_place.deserialize(pos1, encoded_data)
 
         -- localize nodeid mapping
         local local_nodeid = localized_id_mapping[foreign_nodeid]
-        node_data[i] = local_nodeid
 
-        j = j + 2
-        param2[i] = byte(data.mapdata, j)
-        j = j + 1
+        if local_nodeid ~= air_cid then
+            node_data[i] = local_nodeid
+            param2[i] = byte(data.mapdata, j+2)
+        end
+
+        j = j + 3
     end
     end
     end
