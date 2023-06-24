@@ -13,7 +13,10 @@ minetest.register_tool("pick_and_place:place", {
         local distance = vector.distance(vector.new(), size)
 
         local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance))
-        pick_and_place.deserialize(pos1, schematic)
+        local success, msg = pick_and_place.deserialize(pos1, schematic)
+        if not success then
+            minetest.chat_send_player(player:get_player_name(), "Placement error: " .. msg)
+        end
     end,
     on_step = function(itemstack, player)
         local playername = player:get_player_name()

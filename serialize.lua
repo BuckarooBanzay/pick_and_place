@@ -13,6 +13,9 @@ local function decode_uint16(str, ofs)
 	return a + b * 0x100
 end
 
+-- nodeid -> name
+local nodeid_name_mapping = {}
+
 function pick_and_place.serialize(pos1, pos2)
     local manip = minetest.get_voxel_manip()
 	local e1, e2 = manip:read_from_map(pos1, pos2)
@@ -24,14 +27,31 @@ function pick_and_place.serialize(pos1, pos2)
     local mapdata = {}
     local metadata = {}
 
+    -- nodeid -> true
+    local nodeids = {}
+
     for z=pos1.z,pos2.z do
     for x=pos1.x,pos2.x do
     for y=pos1.y,pos2.y do
         local i = area:index(x,y,z)
+        nodeids[node_data[i]] = true
         table.insert(mapdata, encode_uint16(node_data[i]))
         table.insert(mapdata, char(param2[i]))
     end
     end
+    end
+
+    -- id -> name
+    local nodeid_mapping = {}
+
+    for nodeid in pairs(nodeids) do
+        local name = nodeid_name_mapping[nodeid]
+        if not name then
+            name = minetest.get_name_from_content_id(nodeid)
+            nodeid_name_mapping[nodeid] = name
+        end
+
+        nodeid_mapping[nodeid] = name
     end
 
     -- TODO: metadata
@@ -39,8 +59,10 @@ function pick_and_place.serialize(pos1, pos2)
     local size = vector.add(vector.subtract(pos2, pos1), 1)
 
     local data = {
+        version = 1,
         mapdata = table.concat(mapdata),
         metadata = metadata,
+        nodeid_mapping = nodeid_mapping,
         size = size
     }
 
@@ -51,12 +73,17 @@ function pick_and_place.serialize(pos1, pos2)
     return encoded_data
 end
 
+-- name -> nodeid
+local name_nodeid_mapping = {}
 
 function pick_and_place.deserialize(pos1, encoded_data)
-
     local compressed_data = minetest.decode_base64(encoded_data)
     local serialized_data = minetest.decompress(compressed_data, "deflate")
     local data = minetest.deserialize(serialized_data)
+
+    if data.version ~= 1 then
+        return false, "invalid version: " .. (data.version or "nil")
+    end
 
     local pos2 = vector.add(pos1, vector.subtract(data.size, 1))
 
@@ -67,13 +94,30 @@ function pick_and_place.deserialize(pos1, encoded_data)
     local node_data = manip:get_data()
 	local param2 = manip:get_param2_data()
 
-    local j = 1
+    -- foreign_nodeid -> local_nodeid
+    local localized_id_mapping = {}
 
+    for foreign_nodeid, name in pairs(data.nodeid_mapping) do
+        local local_nodeid = name_nodeid_mapping[name]
+        if not local_nodeid then
+            local_nodeid = minetest.get_content_id(name)
+            name_nodeid_mapping[name] = local_nodeid
+        end
+
+        localized_id_mapping[foreign_nodeid] = local_nodeid
+    end
+
+    local j = 1
     for z=pos1.z,pos2.z do
     for x=pos1.x,pos2.x do
     for y=pos1.y,pos2.y do
         local i = area:index(x,y,z)
-        node_data[i] = decode_uint16(data.mapdata, j)
+        local foreign_nodeid = decode_uint16(data.mapdata, j)
+
+        -- localize nodeid mapping
+        local local_nodeid = localized_id_mapping[foreign_nodeid]
+        node_data[i] = local_nodeid
+
         j = j + 2
         param2[i] = byte(data.mapdata, j)
         j = j + 1
@@ -84,4 +128,6 @@ function pick_and_place.deserialize(pos1, encoded_data)
     manip:set_data(node_data)
     manip:set_param2_data(param2)
     manip:write_to_map()
+
+    return true
 end
