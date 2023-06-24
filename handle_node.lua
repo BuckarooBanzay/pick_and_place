@@ -20,7 +20,7 @@ end
 
 minetest.register_node("pick_and_place:handle", {
 	description = "Pick and place handle",
-	tiles = {"pick_and_place_plus.png"},
+	tiles = {"pick_and_place.png"},
     drawtype = "allfaces",
     use_texture_alpha = "blend",
     paramtype = "light",

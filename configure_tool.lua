@@ -4,7 +4,7 @@ local pos1 = {}
 
 minetest.register_tool("pick_and_place:configure", {
     description = "Placement configuration tool",
-    inventory_image = "pick_and_place_plus.png^[colorize:#ffffff",
+    inventory_image = "pick_and_place.png^[colorize:#ffffff",
     stack_max = 1,
     range = 0,
     on_use = function(_, player)
@@ -31,10 +31,10 @@ minetest.register_tool("pick_and_place:configure", {
 
         if pos1[playername] then
             -- first position already selected
-            pick_and_place.show_preview(playername, "pick_and_place_plus.png", "#ffffff", pointed_pos, pos1[playername])
+            pick_and_place.show_preview(playername, "pick_and_place.png", "#ffffff", pointed_pos, pos1[playername])
         else
             -- nothing selected yet
-            pick_and_place.show_preview(playername, "pick_and_place_plus.png", "#ffffff", pointed_pos)
+            pick_and_place.show_preview(playername, "pick_and_place.png", "#ffffff", pointed_pos)
         end
     end,
     on_deselect = function(_, player)
