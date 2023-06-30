@@ -1,5 +1,9 @@
 Pick and place tool for minetest
 
+![luacheck](https://github.com/BuckarooBanzay/pick_and_place/workflows/luacheck/badge.svg)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![ContentDB](https://content.minetest.net/packages/BuckarooBanzay/pick_and_place/shields/downloads/)](https://content.minetest.net/packages/BuckarooBanzay/pick_and_place/)
+
 # Features
 
 * Select and place areas on the fly
