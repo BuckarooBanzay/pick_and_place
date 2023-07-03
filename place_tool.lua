@@ -1,3 +1,5 @@
+local has_mapsync = minetest.get_modpath("mapsync")
+
 minetest.register_tool("pick_and_place:place", {
     description = "Placement tool",
     inventory_image = "pick_and_place_plus.png^[colorize:#0000ff",
@@ -46,6 +48,10 @@ minetest.register_tool("pick_and_place:place", {
         else
             -- build preview
             pick_and_place.show_preview(playername, "pick_and_place_plus.png", "#0000ff", pos1, pos2)
+        end
+
+        if has_mapsync then
+            mapsync.mark_changed(pos1, pos2)
         end
     end,
     on_deselect = function(_, player)

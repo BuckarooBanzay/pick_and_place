@@ -11,5 +11,8 @@ read_globals = {
 	"vector", "ItemStack",
 	"dump", "dump2",
 	"VoxelArea",
-	"minetest"
+	"minetest",
+
+	-- mods
+	"mapsync"
 }
