@@ -95,10 +95,6 @@ end
 local name_nodeid_mapping = {}
 
 function pick_and_place.deserialize(pos1, encoded_data, rotation)
-    print("pick_and_place.deserialize: " .. dump({
-        rotation = rotation,
-        pos1 = pos1
-    }))
     local compressed_data = minetest.decode_base64(encoded_data)
     local serialized_data = minetest.decompress(compressed_data, "deflate")
     local data = minetest.deserialize(serialized_data)
@@ -109,6 +105,13 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
 
     local size = pick_and_place.rotate_size(data.size, rotation)
     local pos2 = vector.add(pos1, vector.subtract(size, 1))
+
+    print("pick_and_place.deserialize: " .. dump({
+        rotation = rotation,
+        size = size,
+        pos1 = pos1,
+        pos2 = pos2
+    }))
 
     local manip = minetest.get_voxel_manip()
 	local e1, e2 = manip:read_from_map(pos1, pos2)
