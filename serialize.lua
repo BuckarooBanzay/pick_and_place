@@ -103,18 +103,20 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
         return false, "invalid version: " .. (data.version or "nil")
     end
 
-    local size = pick_and_place.rotate_size(data.size, rotation)
-    local pos2 = vector.add(pos1, vector.subtract(size, 1))
+    local size = vector.subtract(pick_and_place.rotate_size(data.size, rotation),1)
+    local pos2 = vector.add(pos1, vector.subtract(data.size, 1))
+    local rotated_pos2 = vector.add(pos1, size)
 
     print("pick_and_place.deserialize: " .. dump({
         rotation = rotation,
         size = size,
         pos1 = pos1,
-        pos2 = pos2
+        pos2 = pos2,
+        rotated_pos2 = rotated_pos2
     }))
 
     local manip = minetest.get_voxel_manip()
-	local e1, e2 = manip:read_from_map(pos1, pos2)
+	local e1, e2 = manip:read_from_map(pos1, rotated_pos2)
 	local area = VoxelArea:new({MinEdge=e1, MaxEdge=e2})
 
     local node_data = manip:get_data()
