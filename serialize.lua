@@ -103,7 +103,8 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
         return false, "invalid version: " .. (data.version or "nil")
     end
 
-    local pos2 = vector.add(pos1, vector.subtract(data.size, 1))
+    local size = pick_and_place.rotate_size(data.size, rotation)
+    local pos2 = vector.add(pos1, vector.subtract(size, 1))
 
     local manip = minetest.get_voxel_manip()
 	local e1, e2 = manip:read_from_map(pos1, pos2)
@@ -145,7 +146,14 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
     end
     end
 
-    pick_and_place.rotate_schematic(node_data, param2, data.metadata, data.size, rotation)
+    -- TODO: work on "data.mapdata" not the world-data
+    print("pick_and_place.deserialize: " .. dump({
+        rotation = rotation,
+        size = size,
+        pos1 = pos1,
+        pos2 = pos2
+    }))
+    pick_and_place.schematic_rotate(node_data, param2, data.metadata, size, rotation)
 
     -- set metadata
     for pos_str, meta_table in pairs(data.metadata) do
