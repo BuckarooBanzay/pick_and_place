@@ -130,7 +130,11 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
     for z=pos1.z,pos2.z do
     for x=pos1.x,pos2.x do
     for y=pos1.y,pos2.y do
-        local i = area:index(x,y,z)
+        local pos = { x=x, y=y, z=z }
+        local rel_pos = vector.subtract(pos, pos1)
+        local rotated_pos = pick_and_place.rotate_pos(rel_pos, size, rotation)
+        local rotated_abs_pos = vector.add(pos1, rotated_pos)
+        local i = area:indexp(rotated_abs_pos)
         local foreign_nodeid = decode_uint16(data.mapdata, j)
 
         -- localize nodeid mapping
@@ -148,8 +152,9 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
 
     -- set metadata
     for pos_str, meta_table in pairs(data.metadata) do
-        local pos = minetest.string_to_pos(pos_str)
-        local abs_pos = vector.add(pos1, pos)
+        local rel_pos = minetest.string_to_pos(pos_str)
+        local rotated_pos = pick_and_place.rotate_pos(rel_pos, size, rotation)
+        local abs_pos = vector.add(pos1, rotated_pos)
         local meta = minetest.get_meta(abs_pos)
         meta:from_table(meta_table)
     end
