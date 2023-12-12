@@ -94,7 +94,7 @@ end
 -- name -> nodeid
 local name_nodeid_mapping = {}
 
-function pick_and_place.deserialize(pos1, encoded_data)
+function pick_and_place.deserialize(pos1, encoded_data, rotation)
     local compressed_data = minetest.decode_base64(encoded_data)
     local serialized_data = minetest.decompress(compressed_data, "deflate")
     local data = minetest.deserialize(serialized_data)
@@ -103,10 +103,20 @@ function pick_and_place.deserialize(pos1, encoded_data)
         return false, "invalid version: " .. (data.version or "nil")
     end
 
+    local size = vector.subtract(pick_and_place.rotate_size(data.size, rotation),1)
     local pos2 = vector.add(pos1, vector.subtract(data.size, 1))
+    local rotated_pos2 = vector.add(pos1, size)
+
+    print("pick_and_place.deserialize: " .. dump({
+        rotation = rotation,
+        size = size,
+        pos1 = pos1,
+        pos2 = pos2,
+        rotated_pos2 = rotated_pos2
+    }))
 
     local manip = minetest.get_voxel_manip()
-	local e1, e2 = manip:read_from_map(pos1, pos2)
+	local e1, e2 = manip:read_from_map(pos1, rotated_pos2)
 	local area = VoxelArea:new({MinEdge=e1, MaxEdge=e2})
 
     local node_data = manip:get_data()
@@ -129,7 +139,11 @@ function pick_and_place.deserialize(pos1, encoded_data)
     for z=pos1.z,pos2.z do
     for x=pos1.x,pos2.x do
     for y=pos1.y,pos2.y do
-        local i = area:index(x,y,z)
+        local pos = { x=x, y=y, z=z }
+        local rel_pos = vector.subtract(pos, pos1)
+        local rotated_pos = pick_and_place.rotate_pos(rel_pos, size, rotation)
+        local rotated_abs_pos = vector.add(pos1, rotated_pos)
+        local i = area:indexp(rotated_abs_pos)
         local foreign_nodeid = decode_uint16(data.mapdata, j)
 
         -- localize nodeid mapping
@@ -145,14 +159,16 @@ function pick_and_place.deserialize(pos1, encoded_data)
     end
     end
 
-    -- metadata
+    -- set metadata
     for pos_str, meta_table in pairs(data.metadata) do
-        local pos = minetest.string_to_pos(pos_str)
-        local abs_pos = vector.add(pos1, pos)
+        local rel_pos = minetest.string_to_pos(pos_str)
+        local rotated_pos = pick_and_place.rotate_pos(rel_pos, size, rotation)
+        local abs_pos = vector.add(pos1, rotated_pos)
         local meta = minetest.get_meta(abs_pos)
         meta:from_table(meta_table)
     end
 
+    -- set nodeid's and param2
     manip:set_data(node_data)
     manip:set_param2_data(param2)
     manip:write_to_map()
