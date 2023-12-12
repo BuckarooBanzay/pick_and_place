@@ -146,15 +146,6 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
     end
     end
 
-    -- TODO: work on "data.mapdata" not the world-data
-    print("pick_and_place.deserialize: " .. dump({
-        rotation = rotation,
-        size = size,
-        pos1 = pos1,
-        pos2 = pos2
-    }))
-    pick_and_place.schematic_rotate(node_data, param2, data.metadata, size, rotation)
-
     -- set metadata
     for pos_str, meta_table in pairs(data.metadata) do
         local pos = minetest.string_to_pos(pos_str)
