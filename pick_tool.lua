@@ -17,7 +17,7 @@ minetest.register_tool("pick_and_place:pick", {
             -- configure and create tool
             local p1, p2 = pick_and_place.sort_pos(pos1[playername], pointed_pos)
 
-            local tool = pick_and_place.create_tool(p1, p2, player)
+            local tool = pick_and_place.create_tool(p1, p2, "", player)
             pos1[playername] = nil
             return tool
         else

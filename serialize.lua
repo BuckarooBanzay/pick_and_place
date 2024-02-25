@@ -145,7 +145,7 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
     end
     end
 
-    pick_and_place.rotate_schematic(node_data, param2, data.metadata, data.size, rotation)
+    pick_and_place.schematic_rotate(node_data, param2, data.metadata, data.size, rotation)
 
     -- set metadata
     for pos_str, meta_table in pairs(data.metadata) do
