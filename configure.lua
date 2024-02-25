@@ -16,7 +16,7 @@ local function get_outer_corners(pos1, pos2)
     }
 end
 
-function pick_and_place.configure(pos1, pos2)
+function pick_and_place.configure(pos1, pos2, name)
     pos1, pos2 = pick_and_place.sort_pos(pos1, pos2)
 
     for _, cpos in ipairs(get_outer_corners(pos1, pos2)) do
@@ -31,6 +31,8 @@ function pick_and_place.configure(pos1, pos2)
 
             meta:set_string("pos1", minetest.pos_to_string(rel_pos1))
             meta:set_string("pos2", minetest.pos_to_string(rel_pos2))
+            meta:set_string("name", name)
+            meta:set_string("infotext", name)
         end
     end
 end

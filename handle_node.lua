@@ -9,12 +9,13 @@ local function on_rightclick(pos, _, _, itemstack)
 	-- relative positions
 	local rel_pos1 = minetest.string_to_pos(meta:get_string("pos1"))
 	local rel_pos2 = minetest.string_to_pos(meta:get_string("pos2"))
+	local name = meta:get_string("name")
 
 	-- absolute positions
 	local pos1 = vector.add(pos, rel_pos1)
 	local pos2 = vector.add(pos, rel_pos2)
 
-	return pick_and_place.create_tool(pos1, pos2)
+	return pick_and_place.create_tool(pos1, pos2, name)
 end
 
 

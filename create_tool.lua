@@ -1,4 +1,4 @@
-function pick_and_place.create_tool(pos1, pos2)
+function pick_and_place.create_tool(pos1, pos2, name)
     local size = vector.add(vector.subtract(pos2, pos1), 1)
 
     local tool = ItemStack("pick_and_place:place 1")
@@ -9,7 +9,10 @@ function pick_and_place.create_tool(pos1, pos2)
     local schematic = pick_and_place.serialize(pos1, pos2)
     tool_meta:set_string("schematic", schematic)
 
-    local desc = string.format("Placement tool (%d bytes, size: %s)", #schematic, minetest.pos_to_string(size))
+    local desc = string.format(
+        "Placement tool '%s' (%d bytes, size: %s)",
+        name or "", #schematic, minetest.pos_to_string(size)
+    )
     tool_meta:set_string("description", desc)
 
     return tool
