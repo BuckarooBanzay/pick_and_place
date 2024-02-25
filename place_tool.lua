@@ -1,5 +1,17 @@
 local has_mapsync = minetest.get_modpath("mapsync")
 
+local function get_pos(player, size)
+    local distance = vector.distance(vector.new(), size)
+    local radius = math.ceil(distance / 2)
+    local offset = vector.round(vector.divide(size, 2))
+
+    local pos1 = pick_and_place.get_pointed_position(player, radius + 2)
+    pos1 = vector.subtract(pos1, offset)
+    local pos2 = vector.add(pos1, vector.subtract(size, 1))
+
+    return pos1, pos2
+end
+
 minetest.register_tool("pick_and_place:place", {
     description = "Placement tool",
     inventory_image = "pick_and_place_plus.png^[colorize:#0000ff",
@@ -15,10 +27,7 @@ minetest.register_tool("pick_and_place:place", {
         local meta = itemstack:get_meta()
         local schematic = meta:get_string("schematic")
         local size = minetest.string_to_pos(meta:get_string("size"))
-        local distance = vector.distance(vector.new(), size)
-
-        local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance) + 5)
-        local pos2 = vector.add(pos1, vector.subtract(size, 1))
+        local pos1, pos2 = get_pos(player, size)
 
         if controls.aux1 then
             -- removal
@@ -37,10 +46,7 @@ minetest.register_tool("pick_and_place:place", {
 
         local meta = itemstack:get_meta()
         local size = minetest.string_to_pos(meta:get_string("size"))
-        local distance = vector.distance(vector.new(), size)
-
-        local pos1 = pick_and_place.get_pointed_position(player, math.max(10, distance) + 5)
-        local pos2 = vector.add(pos1, vector.subtract(size, 1))
+        local pos1, pos2 = get_pos(player, size)
 
         if controls.aux1 then
             -- removal preview
