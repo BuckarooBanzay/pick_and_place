@@ -3,6 +3,11 @@ pick_and_place = {}
 
 local MP = minetest.get_modpath("pick_and_place")
 dofile(MP .. "/common.lua")
+dofile(MP .. "/rotate.lua")
+dofile(MP .. "/schematic_rotate.lua")
+dofile(MP .. "/schematic_flip.lua")
+dofile(MP .. "/schematic_orient.lua")
+dofile(MP .. "/schematic_transpose.lua")
 dofile(MP .. "/pointed.lua")
 dofile(MP .. "/configure.lua")
 dofile(MP .. "/remove.lua")
