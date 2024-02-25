@@ -11,6 +11,11 @@ local function on_rightclick(pos, _, _, itemstack)
 	local rel_pos2 = minetest.string_to_pos(meta:get_string("pos2"))
 	local name = meta:get_string("name")
 
+	if not rel_pos1 or not rel_pos2 then
+		-- not configured
+		return
+	end
+
 	-- absolute positions
 	local pos1 = vector.add(pos, rel_pos1)
 	local pos2 = vector.add(pos, rel_pos2)
