@@ -20,3 +20,7 @@ dofile(MP .. "/configure_tool.lua")
 dofile(MP .. "/pick_tool.lua")
 dofile(MP .. "/place_tool.lua")
 dofile(MP .. "/preview.lua")
+
+if minetest.get_modpath("mtt") and mtt.enabled then
+	dofile(MP .. "/encode.spec.lua")
+end
