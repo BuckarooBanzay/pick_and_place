@@ -43,8 +43,8 @@ function pick_and_place.serialize(pos1, pos2)
     end
 
     local schematic = {
-        node_id_data = table.concat(node_id_data),
-        param2_data = table.concat(param2_data),
+        node_id_data = node_id_data,
+        param2_data = param2_data,
         metadata = metadata,
         size = vector.add(vector.subtract(pos2, pos1), 1)
     }

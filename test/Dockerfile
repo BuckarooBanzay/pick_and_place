@@ -3,9 +3,7 @@ FROM registry.gitlab.com/minetest/minetest/server:${ENGINE_VERSION}
 
 USER root
 
-RUN apk add --no-cache lua-dev luarocks &&\
-    luarocks-5.1 install luacov &&\
-    luarocks-5.1 install luacov-reporter-lcov
+RUN apk add --no-cache lua-dev luarocks
 
 RUN apk add git &&\
     mkdir -p /root/.minetest/worlds/world/worldmods/ &&\

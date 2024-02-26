@@ -28,8 +28,8 @@ function pick_and_place.encode_schematic(schematic)
     for i = 1, #schematic.node_id_data do
         local node_id = schematic.node_id_data[i]
         nodeids[node_id] = true
-        table.insert(node_id_data, char(node_id))
-        table.insert(param2_data, encode_uint16(schematic.param2_data[i]))
+        table.insert(node_id_data, encode_uint16(node_id))
+        table.insert(param2_data, char(schematic.param2_data[i]))
     end
 
     for nodeid in pairs(nodeids) do
@@ -88,13 +88,13 @@ function pick_and_place.decode_schematic(encoded_data)
         localized_id_mapping[foreign_nodeid] = local_nodeid
     end
 
-    for i = 1, #data.node_id_data do
+    for i = 1, #data.param2_data do
         -- localize nodeid mapping
-        local foreign_nodeid = decode_uint16(data.mapdata, i)
+        local foreign_nodeid = decode_uint16(data.node_id_data, 1 + ((i-1) * 2))
         local local_nodeid = localized_id_mapping[foreign_nodeid]
 
         table.insert(schematic.node_id_data, local_nodeid)
-        table.insert(schematic.param2_data, byte(data.param2_data, 1 + ((i-1) * 2)))
+        table.insert(schematic.param2_data, byte(data.param2_data, i))
     end
 
     return schematic
