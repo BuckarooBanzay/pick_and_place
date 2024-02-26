@@ -94,7 +94,7 @@ end
 -- name -> nodeid
 local name_nodeid_mapping = {}
 
-function pick_and_place.deserialize(pos1, encoded_data, rotation)
+function pick_and_place.deserialize(pos1, encoded_data)
     local compressed_data = minetest.decode_base64(encoded_data)
     local serialized_data = minetest.decompress(compressed_data, "deflate")
     local data = minetest.deserialize(serialized_data)
@@ -144,8 +144,6 @@ function pick_and_place.deserialize(pos1, encoded_data, rotation)
     end
     end
     end
-
-    pick_and_place.schematic_rotate(node_data, param2, data.metadata, data.size, rotation)
 
     -- set metadata
     for pos_str, meta_table in pairs(data.metadata) do

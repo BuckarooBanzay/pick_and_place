@@ -1,4 +1,4 @@
-local function on_rightclick(pos, _, player, itemstack)
+local function on_rightclick(pos, _, _, itemstack)
 	if not itemstack:is_empty() then
 		-- not an empty hand
 		return
@@ -20,7 +20,7 @@ local function on_rightclick(pos, _, player, itemstack)
 	local pos1 = vector.add(pos, rel_pos1)
 	local pos2 = vector.add(pos, rel_pos2)
 
-	return pick_and_place.create_tool(pos1, pos2, name, player)
+	return pick_and_place.create_tool(pos1, pos2, name)
 end
 
 

@@ -1,27 +1,16 @@
 local has_mapsync = minetest.get_modpath("mapsync")
 
-local function extract_schematic_info(meta, player)
+local function get_pos(meta, player)
     local size = minetest.string_to_pos(meta:get_string("size"))
     local distance = vector.distance(vector.new(), size)
     local radius = math.ceil(distance / 2)
     local offset = vector.round(vector.divide(size, 2))
 
-    local player_rotation = pick_and_place.get_player_rotation(player)
-    local pickup_rotation = meta:get_int("rotation")
-
-    -- placement rotation from 0 to 270 degrees
-    local rotation = player_rotation - pickup_rotation
-    if rotation < 0 then rotation = rotation + 360 end
-    if rotation > 270 then rotation = rotation - 360 end
-
-    -- rotation building size
-    size = pick_and_place.rotate_size(size, rotation)
-
     local pos1 = pick_and_place.get_pointed_position(player, radius + 2)
     pos1 = vector.subtract(pos1, offset)
     local pos2 = vector.add(pos1, vector.subtract(size, 1))
 
-    return pos1, pos2, rotation
+    return pos1, pos2
 end
 
 minetest.register_tool("pick_and_place:place", {
@@ -38,7 +27,7 @@ minetest.register_tool("pick_and_place:place", {
 
         local meta = itemstack:get_meta()
 
-        local pos1, pos2, rotation = extract_schematic_info(meta, player)
+        local pos1, pos2 = get_pos(meta, player)
 
         if controls.aux1 then
             -- removal
@@ -46,7 +35,7 @@ minetest.register_tool("pick_and_place:place", {
         else
             -- placement
             local schematic = meta:get_string("schematic")
-            local success, msg = pick_and_place.deserialize(pos1, schematic, rotation)
+            local success, msg = pick_and_place.deserialize(pos1, schematic)
             if not success then
                 minetest.chat_send_player(playername, "Placement error: " .. msg)
             end
@@ -57,7 +46,7 @@ minetest.register_tool("pick_and_place:place", {
         local controls = player:get_player_control()
 
         local meta = itemstack:get_meta()
-        local pos1, pos2 = extract_schematic_info(meta, player)
+        local pos1, pos2 = get_pos(meta, player)
 
         if controls.aux1 then
             -- removal preview
