@@ -54,16 +54,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     if not fields.save and not fields.key_enter_field then
-        return false
+        return true
     end
 
     local playername = player:get_player_name()
     if not pos1[playername] or not pos2[playername] then
-        return false
+        return true
     end
 
     -- configure and unmark
     pick_and_place.configure(pos1[playername], pos2[playername], fields.name)
     pos1[playername] = nil
     pos2[playername] = nil
+
+    return true
 end)

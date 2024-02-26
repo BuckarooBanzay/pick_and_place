@@ -1,3 +1,5 @@
+local FORMSPEC_NAME = "pick_and_place:place"
+
 local has_mapsync = minetest.get_modpath("mapsync")
 
 local function get_pos(meta, player)
@@ -41,6 +43,18 @@ minetest.register_tool("pick_and_place:place", {
             end
         end
     end,
+    on_secondary_use = function(_, player)
+        local playername = player:get_player_name()
+
+        -- show name input
+        minetest.show_formspec(playername, FORMSPEC_NAME, [[
+            size[9,1]
+            real_coordinates[true]
+            button_exit[0.1,0.1;2.8,0.8;deg90;90°]
+            button_exit[3.1,0.1;2.8,0.8;deg180;180°]
+            button_exit[6.1,0.1;2.8,0.8;deg270;270°]
+        ]])
+    end,
     on_step = function(itemstack, player)
         local playername = player:get_player_name()
         local controls = player:get_player_control()
@@ -65,3 +79,38 @@ minetest.register_tool("pick_and_place:place", {
         pick_and_place.clear_preview(playername)
     end
 })
+
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+    if formname ~= FORMSPEC_NAME then
+        return false
+    end
+
+    local itemstack = player:get_wielded_item()
+    if itemstack.name ~= "pick_and_place:place" then
+        return true
+    end
+
+    local meta = itemstack:get_meta()
+    local schematic_data = meta:get_string("schematic")
+    local schematic, err = pick_and_place.decode_schematic(schematic_data)
+    if err then
+        minetest.chat_send_player(player:get_player_name(), "Schematic decode error: " .. err)
+        return true
+    end
+
+    local rotation = 0
+    if fields.deg90 then
+        rotation = 90
+    elseif fields.deg180 then
+        rotation = 180
+    elseif fields.deg270 then
+        rotation = 270
+    end
+
+    pick_and_place.schematic_rotate(schematic, rotation)
+
+    meta:set_string("schematic", pick_and_place.encode_schematic(schematic))
+    player:set_wielded_item(itemstack)
+
+    return true
+end)
