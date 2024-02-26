@@ -90,14 +90,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return true
     end
 
-    local meta = itemstack:get_meta()
-    local schematic_data = meta:get_string("schematic")
-    local schematic, err = pick_and_place.decode_schematic(schematic_data)
-    if err then
-        minetest.chat_send_player(player:get_player_name(), "Schematic decode error: " .. err)
-        return true
-    end
-
     local rotation = 0
     if fields.deg90 then
         rotation = 90
@@ -105,6 +97,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         rotation = 180
     elseif fields.deg270 then
         rotation = 270
+    end
+
+    if rotation == 0 then
+        return true
+    end
+
+    local meta = itemstack:get_meta()
+    local schematic_data = meta:get_string("schematic")
+    local schematic, err = pick_and_place.decode_schematic(schematic_data)
+    if err then
+        minetest.chat_send_player(player:get_player_name(), "Schematic decode error: " .. err)
+        return true
     end
 
     pick_and_place.schematic_rotate(schematic, rotation)
