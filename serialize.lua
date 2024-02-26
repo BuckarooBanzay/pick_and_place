@@ -68,18 +68,18 @@ function pick_and_place.deserialize(pos1, encoded_data)
     local node_data = manip:get_data()
 	local param2 = manip:get_param2_data()
 
+    local j = 1
     for z=pos1.z,pos2.z do
     for x=pos1.x,pos2.x do
     for y=pos1.y,pos2.y do
         local i = area:index(x,y,z)
-
-        -- localize nodeid mapping
-        local nodeid = schematic.node_id_data[i]
+        local nodeid = schematic.node_id_data[j]
 
         if nodeid ~= air_cid then
             node_data[i] = nodeid
-            param2[i] = schematic.param2_data[i]
+            param2[i] = schematic.param2_data[j]
         end
+        j = j + 1
     end
     end
     end

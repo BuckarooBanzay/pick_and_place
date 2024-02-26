@@ -86,7 +86,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     local itemstack = player:get_wielded_item()
-    if itemstack.name ~= "pick_and_place:place" then
+    if itemstack:get_name() ~= "pick_and_place:place" then
         return true
     end
 
@@ -111,9 +111,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return true
     end
 
+    -- rotate schematic
     pick_and_place.schematic_rotate(schematic, rotation)
-
     meta:set_string("schematic", pick_and_place.encode_schematic(schematic))
+
+    -- rotate size
+    local size = minetest.string_to_pos(meta:get_string("size"))
+    size = pick_and_place.rotate_size(size, rotation)
+    meta:set_string("size", minetest.pos_to_string(size))
+
+    -- set tool
     player:set_wielded_item(itemstack)
 
     return true

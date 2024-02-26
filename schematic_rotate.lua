@@ -1,5 +1,11 @@
 
 function pick_and_place.schematic_rotate(schematic, rotation)
+    print(dump({
+        fn = "before",
+        schematic = schematic,
+        rotation = rotation
+    }))
+
     if rotation <= 0 or rotation > 270 then
         -- invalid or no rotation
         return
@@ -26,6 +32,12 @@ function pick_and_place.schematic_rotate(schematic, rotation)
     pick_and_place.schematic_orient(node_ids, param2_data, max, rotation)
 
     -- rotate size
-    pick_and_place.rotate_size(schematic.size, rotation)
+    schematic.size = pick_and_place.rotate_size(schematic.size, rotation)
+
+    print(dump({
+        fn = "after",
+        schematic = schematic,
+        max = max
+    }))
 end
 
