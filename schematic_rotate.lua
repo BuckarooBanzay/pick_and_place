@@ -1,11 +1,16 @@
 
-function pick_and_place.schematic_rotate(node_ids, param2_data, metadata, max, rotation)
+function pick_and_place.schematic_rotate(schematic, rotation)
     if rotation <= 0 or rotation > 270 then
         -- invalid or no rotation
         return
     end
 
     local other1, other2 = "x", "z"
+
+    local node_ids = schematic.node_id_data
+    local param2_data = schematic.param2_data
+    local metadata = schematic.metadata
+    local max = vector.subtract(schematic.size, 1)
 
     if rotation == 90 then
         pick_and_place.schematic_flip(node_ids, param2_data, metadata, max, other1)
@@ -19,5 +24,8 @@ function pick_and_place.schematic_rotate(node_ids, param2_data, metadata, max, r
     end
 
     pick_and_place.schematic_orient(node_ids, param2_data, max, rotation)
+
+    -- rotate size
+    pick_and_place.rotate_size(schematic.size, rotation)
 end
 

@@ -23,4 +23,5 @@ dofile(MP .. "/preview.lua")
 
 if minetest.get_modpath("mtt") and mtt.enabled then
 	dofile(MP .. "/encode.spec.lua")
+	dofile(MP .. "/schematic_rotate.spec.lua")
 end
