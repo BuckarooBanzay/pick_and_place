@@ -13,8 +13,8 @@ function pick_and_place.serialize(pos1, pos2)
     local metadata = {}
 
     for z=pos1.z,pos2.z do
-    for x=pos1.x,pos2.x do
     for y=pos1.y,pos2.y do
+    for x=pos1.x,pos2.x do
         local i = area:index(x,y,z)
         table.insert(node_id_data, node_data[i])
         table.insert(param2_data, param2[i])
@@ -70,8 +70,8 @@ function pick_and_place.deserialize(pos1, encoded_data)
 
     local j = 1
     for z=pos1.z,pos2.z do
-    for x=pos1.x,pos2.x do
     for y=pos1.y,pos2.y do
+    for x=pos1.x,pos2.x do
         local i = area:index(x,y,z)
         local nodeid = schematic.node_id_data[j]
 
