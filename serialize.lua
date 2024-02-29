@@ -78,16 +78,21 @@ function pick_and_place.deserialize(pos1, encoded_data)
         local nodeid = schematic.node_id_data[j]
 
         if nodeid == replacement_cid then
+            -- replacement placement
             local abs_pos = {x=x, y=y, z=z}
             local rel_pos = vector.subtract(abs_pos, pos1)
             local pos_str = minetest.pos_to_string(rel_pos)
             local metadata = schematic.metadata[pos_str]
             local repl_id = pick_and_place.get_replacement_nodeid(ctx, metadata)
             if repl_id then
+                -- set new node
                 node_data[i] = repl_id
                 param2[i] = schematic.param2_data[j]
+                -- clear metadata
+                schematic.metadata[pos_str] = nil
             end
         elseif nodeid ~= air_cid then
+            -- normal placement
             node_data[i] = nodeid
             param2[i] = schematic.param2_data[j]
         end

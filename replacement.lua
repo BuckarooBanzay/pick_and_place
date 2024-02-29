@@ -11,6 +11,12 @@ local function update_formspec(meta)
         list[current_player;main;0.1,3;8,4;]
         listring[]
     ]])
+
+    local txt = "Replacement node"
+    if group and group ~= "" then
+        txt = txt .. " (group: '" .. group .. "')"
+    end
+    meta:set_string("infotext", txt)
 end
 
 minetest.register_node("pick_and_place:replacement", {
