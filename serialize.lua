@@ -69,6 +69,7 @@ function pick_and_place.deserialize(pos1, encoded_data)
     local node_data = manip:get_data()
 	local param2 = manip:get_param2_data()
 
+    local ctx = {}
     local j = 1
     for z=pos1.z,pos2.z do
     for y=pos1.y,pos2.y do
@@ -81,10 +82,12 @@ function pick_and_place.deserialize(pos1, encoded_data)
             local rel_pos = vector.subtract(abs_pos, pos1)
             local pos_str = minetest.pos_to_string(rel_pos)
             local metadata = schematic.metadata[pos_str]
-            pick_and_place.get_replacement_nodeid(metadata)
-        end
-
-        if nodeid ~= air_cid then
+            local repl_id = pick_and_place.get_replacement_nodeid(ctx, metadata)
+            if repl_id then
+                node_data[i] = repl_id
+                param2[i] = schematic.param2_data[j]
+            end
+        elseif nodeid ~= air_cid then
             node_data[i] = nodeid
             param2[i] = schematic.param2_data[j]
         end
