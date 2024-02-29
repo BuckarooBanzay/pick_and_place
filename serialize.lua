@@ -1,4 +1,5 @@
 local air_cid = minetest.get_content_id("air")
+local replacement_cid = minetest.get_content_id("pick_and_place:replacement")
 
 function pick_and_place.serialize(pos1, pos2)
     local manip = minetest.get_voxel_manip()
@@ -74,6 +75,14 @@ function pick_and_place.deserialize(pos1, encoded_data)
     for x=pos1.x,pos2.x do
         local i = area:index(x,y,z)
         local nodeid = schematic.node_id_data[j]
+
+        if nodeid == replacement_cid then
+            local abs_pos = {x=x, y=y, z=z}
+            local rel_pos = vector.subtract(abs_pos, pos1)
+            local pos_str = minetest.pos_to_string(rel_pos)
+            local metadata = schematic.metadata[pos_str]
+            pick_and_place.get_replacement_nodeid(metadata)
+        end
 
         if nodeid ~= air_cid then
             node_data[i] = nodeid
