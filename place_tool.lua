@@ -1,6 +1,7 @@
 local FORMSPEC_NAME = "pick_and_place:place"
 
 local has_mapsync = minetest.get_modpath("mapsync")
+local has_blockexchange = minetest.get_modpath("blockexchange")
 
 local function get_pos(meta, player)
     local size = minetest.string_to_pos(meta:get_string("size"))
@@ -13,6 +14,16 @@ local function get_pos(meta, player)
     local pos2 = vector.add(pos1, vector.subtract(size, 1))
 
     return pos1, pos2
+end
+
+-- notify supported mods of changes
+local function notify_change(pos1, pos2)
+    if has_blockexchange then
+        blockexchange.mark_changed(pos1, pos2)
+    end
+    if has_mapsync then
+        mapsync.mark_changed(pos1, pos2)
+    end
 end
 
 minetest.register_tool("pick_and_place:place", {
@@ -34,12 +45,15 @@ minetest.register_tool("pick_and_place:place", {
         if controls.aux1 then
             -- removal
             pick_and_place.remove_area(pos1, pos2)
+            notify_change(pos1, pos2)
         else
             -- placement
             local schematic = meta:get_string("schematic")
             local success, msg = pick_and_place.deserialize(pos1, schematic)
             if not success then
                 minetest.chat_send_player(playername, "Placement error: " .. msg)
+            else
+                notify_change(pos1, pos2)
             end
         end
     end,
@@ -68,10 +82,6 @@ minetest.register_tool("pick_and_place:place", {
         else
             -- build preview
             pick_and_place.show_preview(playername, "pick_and_place_plus.png", "#0000ff", pos1, pos2)
-        end
-
-        if has_mapsync then
-            mapsync.mark_changed(pos1, pos2)
         end
     end,
     on_deselect = function(_, player)

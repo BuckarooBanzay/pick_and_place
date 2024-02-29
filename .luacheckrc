@@ -14,5 +14,5 @@ read_globals = {
 	"minetest",
 
 	-- mods
-	"mapsync", "mtt"
+	"mapsync", "mtt", "blockexchange"
 }
