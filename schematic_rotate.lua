@@ -40,6 +40,18 @@ local function extract_from_buffer(buf, size, max, offset)
     return data
 end
 
+local function apply_offset(metadata_map, offset)
+    local new_metadata_map = {}
+    for pos_str, metadata in pairs(metadata_map) do
+        local pos = minetest.string_to_pos(pos_str)
+        local new_pos = vector.subtract(pos, offset)
+        local new_pos_str = minetest.pos_to_string(new_pos)
+
+        new_metadata_map[new_pos_str] = metadata
+    end
+    return new_metadata_map
+end
+
 function pick_and_place.schematic_rotate(schematic, rotation)
     if rotation <= 0 or rotation > 270 then
         -- invalid or no rotation
@@ -92,6 +104,7 @@ function pick_and_place.schematic_rotate(schematic, rotation)
     end
     schematic.node_id_data = extract_from_buffer(node_id_buf, vector.subtract(rotated_size, 1), max, offset)
     schematic.param2_data = extract_from_buffer(param2_buf, vector.subtract(rotated_size, 1), max, offset)
+    schematic.metadata = apply_offset(metadata, offset)
 
     -- rotate size
     schematic.size = rotated_size
