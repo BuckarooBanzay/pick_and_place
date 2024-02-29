@@ -25,6 +25,7 @@ minetest.register_node("pick_and_place:replacement", {
     drawtype = "allfaces",
     use_texture_alpha = "blend",
     paramtype = "light",
+    paramtype2 = "facedir",
     sunlight_propagates = true,
 	groups = {
 		oddly_breakable_by_hand = 3
