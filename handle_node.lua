@@ -34,6 +34,7 @@ minetest.register_node("pick_and_place:handle", {
 	on_rightclick = on_rightclick,
 	drop = "",
 	groups = {
-		oddly_breakable_by_hand = 3
+		oddly_breakable_by_hand = 3,
+		not_in_creative_inventory = 1
 	}
 })
