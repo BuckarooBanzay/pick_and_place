@@ -67,13 +67,6 @@ function pick_and_place.schematic_orient(node_ids, param2_data, max, rotation)
 				local node_name = node_id_to_name_cache[node_id]
 				if not node_name then
 					-- cache association
-					print(dump({
-						fn = "orient",
-						node_id = node_id,
-						pos = pos,
-						index = index
-					}))
-
 					node_name = minetest.get_name_from_content_id(node_id)
 					node_id_to_name_cache[node_id] = node_name
 					-- check if param2 is facedir
