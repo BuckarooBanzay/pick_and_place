@@ -8,6 +8,7 @@ Pick and place tool for minetest
 
 * Select and place areas on the fly
 * Configure an area with "handles" to pick and place them quickly
+* Rotation around the y-axis
 
 # Screenshots
 
