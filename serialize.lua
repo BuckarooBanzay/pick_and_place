@@ -54,7 +54,7 @@ function pick_and_place.serialize(pos1, pos2)
 end
 
 
-function pick_and_place.deserialize(pos1, encoded_data)
+function pick_and_place.deserialize(pos1, encoded_data, disable_replacements)
     local schematic, err = pick_and_place.decode_schematic(encoded_data)
     if err then
         return false, "Decode error: " .. err
@@ -77,7 +77,7 @@ function pick_and_place.deserialize(pos1, encoded_data)
         local i = area:index(x,y,z)
         local nodeid = schematic.node_id_data[j]
 
-        if nodeid == replacement_cid then
+        if nodeid == replacement_cid and not disable_replacements then
             -- replacement placement
             local abs_pos = {x=x, y=y, z=z}
             local rel_pos = vector.subtract(abs_pos, pos1)

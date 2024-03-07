@@ -50,6 +50,8 @@ If you pick-and-place a replacement node the default node-placement is replaced 
 * The `param2` value is preserved and rotateable
 * A "group" can be specified to place the same randomized slot across the whole group and placement
 
+**Note**: holding the "zoom" button on place disables the replacement engine
+
 # Portability
 
 The placement tool can be shared across worlds if the nodes are available there.

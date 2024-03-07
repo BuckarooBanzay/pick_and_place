@@ -48,8 +48,9 @@ minetest.register_tool("pick_and_place:place", {
             notify_change(pos1, pos2)
         else
             -- placement
+            local disable_replacements = controls.zoom
             local schematic = meta:get_string("schematic")
-            local success, msg = pick_and_place.deserialize(pos1, schematic)
+            local success, msg = pick_and_place.deserialize(pos1, schematic, disable_replacements)
             if not success then
                 minetest.chat_send_player(playername, "Placement error: " .. msg)
             else
