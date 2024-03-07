@@ -15,31 +15,6 @@ local function reset_recording()
 end
 reset_recording()
 
-minetest.register_chatcommand("pnp_record_origin", {
-    params = "[set|get]",
-    description = "sets or gets the recording origin",
-    func = function(name, param)
-        if param == "set" then
-            if state then
-                return false, "origin can't be set while the recording is active"
-            end
-            -- set origin to current player pos
-            local player = minetest.get_player_by_name(name)
-            if not player then
-                return false, "player not found"
-            end
-            origin = vector.round(player:get_pos())
-            return true, "origin set to: " .. minetest.pos_to_string(origin)
-        else
-            if not origin then
-                return true, "no origin set"
-            else
-                return true, "origin is at: " .. minetest.pos_to_string(origin)
-            end
-        end
-    end
-})
-
 minetest.register_chatcommand("pnp_record_save", {
     params = "[filename]",
     description = "save the current recording to a file in the world-directory",
@@ -74,9 +49,22 @@ minetest.register_chatcommand("pnp_record_load", {
 
 
 minetest.register_chatcommand("pnp_record", {
-    params = "[start|info|stop|reset|play]",
+    params = "[origin|start|info|stop|reset|play]",
     description = "manages the recording state or plays the current recording",
     func = function(name, param)
+        if param == "origin" then
+            if state then
+                return false, "origin can't be set while the recording is active"
+            end
+            -- set origin to current player pos
+            local player = minetest.get_player_by_name(name)
+            if not player then
+                return false, "player not found"
+            end
+            origin = vector.round(player:get_pos())
+            return true, "origin set to: " .. minetest.pos_to_string(origin)
+        end
+
         if not origin then
             return false, "origin not set, please use /pnp_record_origin first"
         end
@@ -84,14 +72,18 @@ minetest.register_chatcommand("pnp_record", {
         if param == "start" then
             state = true
             return true, "recording started"
+
         elseif param == "pause" then
             state = false
             return true, "recording paused"
+
         elseif param == "reset" then
             reset_recording()
             return true, "recording reset"
+
         elseif param == "play" then
             return pick_and_place.start_playback(name, origin, recording)
+
         else
             local msg = "recording state: "
 
@@ -102,6 +94,13 @@ minetest.register_chatcommand("pnp_record", {
             end
 
             msg = msg .. ", entries: " .. #recording.entries
+
+            msg = msg .. ", origin: "
+            if origin then
+                msg = msg .. minetest.pos_to_string(origin)
+            else
+                msg = msg .. "<not set>"
+            end
 
             if recording.min_pos then
                 msg = msg .. ", min_pos: " .. minetest.pos_to_string(recording.min_pos)
@@ -116,7 +115,7 @@ minetest.register_chatcommand("pnp_record", {
 
 local function track_min_max_pos(pos)
     if not recording.min_pos then
-        recording.min_pos = pos
+        recording.min_pos = vector.copy(pos)
     elseif pos.x < recording.min_pos.x then
         recording.min_pos.x = pos.x
     elseif pos.y < recording.min_pos.y then
@@ -126,7 +125,7 @@ local function track_min_max_pos(pos)
     end
 
     if not recording.max_pos then
-        recording.max_pos = pos
+        recording.max_pos = vector.copy(pos)
     elseif pos.x > recording.max_pos.x then
         recording.max_pos.x = pos.x
     elseif pos.y > recording.max_pos.y then
@@ -146,7 +145,8 @@ function pick_and_place.record_removal(pos1, pos2)
 
     local rel_pos1 = vector.subtract(pos1, origin)
     local rel_pos2 = vector.subtract(pos2, origin)
-    track_min_max_pos(rel_pos1, rel_pos2)
+    track_min_max_pos(rel_pos1)
+    track_min_max_pos(rel_pos2)
 
     -- search and remove exact pos1/2 matches
     local entry_removed = false
@@ -163,8 +163,8 @@ function pick_and_place.record_removal(pos1, pos2)
         -- non-aligned removal, just record
         table.insert(recording.entries, {
             type = "remove",
-            pos1 = pos1,
-            pos2 = pos2
+            pos1 = rel_pos1,
+            pos2 = rel_pos2
         })
     end
 end
@@ -176,7 +176,8 @@ function pick_and_place.record_placement(pos1, pos2, rotation, name)
 
     local rel_pos1 = vector.subtract(pos1, origin)
     local rel_pos2 = vector.subtract(pos2, origin)
-    track_min_max_pos(rel_pos1, rel_pos2)
+    track_min_max_pos(rel_pos1)
+    track_min_max_pos(rel_pos2)
 
     table.insert(recording.entries, {
         type = "place",

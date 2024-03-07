@@ -11,7 +11,7 @@ local function playback(ctx)
     -- pick next entry
     local entry = ctx.recording.entries[ctx.i]
     if not entry then
-        minetest.chat_send_player(ctx.playername, "pnp playback done with " .. ctx.i .. " entries")
+        minetest.chat_send_player(ctx.playername, "pnp playback done with " .. (ctx.i-1) .. " entries")
         playback_active = false
         return
     end
@@ -21,15 +21,9 @@ local function playback(ctx)
         minetest.chat_send_player(ctx.playername, "pnp playback: entry " .. ctx.i .. "/" .. #ctx.recording.entries)
     end
 
-    print(dump({
-        entry = entry
-    }))
     if entry.type == "place" then
         local tmpl = pick_and_place.get_template(entry.name)
         if tmpl then
-            print(dump({
-                tmpl = tmpl
-            }))
             local key = get_cache_key(entry.name, entry.rotation)
             local schematic = ctx.cache[key]
 
@@ -45,7 +39,10 @@ local function playback(ctx)
             pick_and_place.deserialize(abs_pos1, schematic)
         end
     elseif entry.type == "remove" then
-        pick_and_place.remove_area(entry.pos1, entry.pos2)
+        local abs_pos1 = vector.add(ctx.origin, entry.pos1)
+        local abs_pos2 = vector.add(ctx.origin, entry.pos2)
+
+        pick_and_place.remove_area(abs_pos1, abs_pos2)
     end
 
     -- re-schedule
