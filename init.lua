@@ -25,6 +25,7 @@ dofile(MP .. "/preview.lua")
 dofile(MP .. "/craft.lua")
 
 if minetest.get_modpath("mtt") and mtt.enabled then
+	dofile(MP .. "/configure.spec.lua")
 	dofile(MP .. "/create_tool.spec.lua")
 	dofile(MP .. "/encode.spec.lua")
 	dofile(MP .. "/schematic_rotate.spec.lua")

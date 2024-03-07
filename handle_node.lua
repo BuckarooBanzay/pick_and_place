@@ -32,6 +32,7 @@ minetest.register_node("pick_and_place:handle", {
     paramtype = "light",
     sunlight_propagates = true,
 	on_rightclick = on_rightclick,
+	on_destruct = pick_and_place.remove_handles,
 	drop = "",
 	groups = {
 		oddly_breakable_by_hand = 3,
