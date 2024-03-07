@@ -39,21 +39,31 @@ minetest.register_tool("pick_and_place:place", {
         local controls = player:get_player_control()
 
         local meta = itemstack:get_meta()
-
         local pos1, pos2 = get_pos(meta, player)
 
         if controls.aux1 then
             -- removal
             pick_and_place.remove_area(pos1, pos2)
+            pick_and_place.record_removal(pos1, pos2)
             notify_change(pos1, pos2)
         else
             -- placement
             local disable_replacements = controls.zoom
-            local schematic = meta:get_string("schematic")
+            local name = meta:get_string("name")
+            local rotation = meta:get_int("rotation")
+            local encoded_schematic = meta:get_string("schematic")
+            local schematic, err = pick_and_place.decode_schematic(encoded_schematic)
+            if err then
+                minetest.chat_send_player(playername, "Decode error: " .. err)
+            end
+
             local success, msg = pick_and_place.deserialize(pos1, schematic, disable_replacements)
             if not success then
                 minetest.chat_send_player(playername, "Placement error: " .. msg)
             else
+                if name ~= "" then
+                    pick_and_place.record_placement(pos1, pos2, rotation, name)
+                end
                 notify_change(pos1, pos2)
             end
         end

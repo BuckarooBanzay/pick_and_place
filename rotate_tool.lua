@@ -5,8 +5,8 @@ function pick_and_place.rotate_tool(itemstack, rotation)
     end
 
     local meta = itemstack:get_meta()
-    local schematic_data = meta:get_string("schematic")
-    local schematic, err = pick_and_place.decode_schematic(schematic_data)
+    local encoded_schematic = meta:get_string("schematic")
+    local schematic, err = pick_and_place.decode_schematic(encoded_schematic)
     if err then
         return false, "Schematic decode error: " .. err
     end

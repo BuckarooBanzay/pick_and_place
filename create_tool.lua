@@ -7,7 +7,8 @@ function pick_and_place.create_tool(pos1, pos2, name)
 
     -- serialize schematic
     local schematic = pick_and_place.serialize(pos1, pos2)
-    tool_meta:set_string("schematic", schematic)
+    local encoded_schematic = pick_and_place.encode_schematic(schematic)
+    tool_meta:set_string("schematic", encoded_schematic)
 
     -- set name
     tool_meta:set_string("name", name)
