@@ -58,7 +58,7 @@ minetest.register_chatcommand("pnp_record_load", {
     description = "loads a recording from a file in the world-directory",
     func = function(_, param)
         local filename = minetest.get_worldpath() .. "/" .. param .. ".json"
-        local f = io.open(filename, "w")
+        local f = io.open(filename, "r")
         if not f then
             return false, "file not found: '" .. filename .. "'"
         end
@@ -91,7 +91,7 @@ minetest.register_chatcommand("pnp_record", {
             reset_recording()
             return true, "recording reset"
         elseif param == "play" then
-            return pick_and_place.start_playback(name, recording)
+            return pick_and_place.start_playback(name, origin, recording)
         else
             local msg = "recording state: "
 
