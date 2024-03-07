@@ -95,11 +95,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return false
     end
 
-    local itemstack = player:get_wielded_item()
-    if itemstack:get_name() ~= "pick_and_place:place" then
-        return true
-    end
-
     local rotation = 0
     if fields.deg90 then
         rotation = 90
@@ -110,25 +105,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     if rotation == 0 then
+        -- nothing to do
         return true
     end
 
-    local meta = itemstack:get_meta()
-    local schematic_data = meta:get_string("schematic")
-    local schematic, err = pick_and_place.decode_schematic(schematic_data)
-    if err then
-        minetest.chat_send_player(player:get_player_name(), "Schematic decode error: " .. err)
+    local itemstack = player:get_wielded_item()
+    local success, err = pick_and_place.rotate_tool(itemstack, rotation)
+    if not success then
+        minetest.chat_send_player(player:get_player_name(), "Rotation error: " .. err)
         return true
     end
-
-    -- rotate schematic
-    pick_and_place.schematic_rotate(schematic, rotation)
-    meta:set_string("schematic", pick_and_place.encode_schematic(schematic))
-
-    -- rotate size
-    local size = minetest.string_to_pos(meta:get_string("size"))
-    size = pick_and_place.rotate_size(size, rotation)
-    meta:set_string("size", minetest.pos_to_string(size))
 
     -- set tool
     player:set_wielded_item(itemstack)
