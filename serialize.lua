@@ -43,23 +43,16 @@ function pick_and_place.serialize(pos1, pos2)
         metadata[minetest.pos_to_string(rel_pos)] = meta_table
     end
 
-    local schematic = {
+    return {
         node_id_data = node_id_data,
         param2_data = param2_data,
         metadata = metadata,
         size = vector.add(vector.subtract(pos2, pos1), 1)
     }
-
-    return pick_and_place.encode_schematic(schematic)
 end
 
 
-function pick_and_place.deserialize(pos1, encoded_data, disable_replacements)
-    local schematic, err = pick_and_place.decode_schematic(encoded_data)
-    if err then
-        return false, "Decode error: " .. err
-    end
-
+function pick_and_place.deserialize(pos1, schematic, disable_replacements)
     local pos2 = vector.add(pos1, vector.subtract(schematic.size, 1))
 
     local manip = minetest.get_voxel_manip()
