@@ -30,10 +30,18 @@ local function rotate_param2(node_name, param2, angle)
 		local paramtype2 = def.paramtype2
 		if paramtype2 == "wallmounted" or paramtype2 == "colorwallmounted" then
 			local orient = param2 % 8
+			if not wallmounted_substitution[orient + 1] then
+				-- unknown rotation/param2
+				return param2
+			end
 			return param2 - orient + wallmounted_substitution[orient + 1]
 
 		elseif paramtype2 == "facedir" or paramtype2 == "colorfacedir" then
 			local orient = param2 % 32
+			if not facedir_substitution[orient + 1] then
+				-- unknown rotation/param2
+				return param2
+			end
 			return param2 - orient + facedir_substitution[orient + 1]
 
 		end
