@@ -52,6 +52,11 @@ If you pick-and-place a replacement node the default node-placement is replaced 
 
 **Note**: holding the "zoom" button on place disables the replacement engine
 
+## Snapping to grid
+
+Grid-snapping can be enabled with `/pnp_snap on` while holding a place-tool.
+Disabling it can be done with `/pnp_snap off`
+
 # Portability
 
 The placement tool can be shared across worlds if the nodes are available there.
