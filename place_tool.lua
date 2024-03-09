@@ -3,19 +3,6 @@ local FORMSPEC_NAME = "pick_and_place:place"
 local has_mapsync = minetest.get_modpath("mapsync")
 local has_blockexchange = minetest.get_modpath("blockexchange")
 
-local function get_pos(meta, player)
-    local size = minetest.string_to_pos(meta:get_string("size"))
-    local distance = vector.distance(vector.new(), size)
-    local radius = math.ceil(distance / 2)
-    local offset = vector.round(vector.divide(size, 2))
-
-    local pos1 = pick_and_place.get_pointed_position(player, radius + 2)
-    pos1 = vector.subtract(pos1, offset)
-    local pos2 = vector.add(pos1, vector.subtract(size, 1))
-
-    return pos1, pos2
-end
-
 -- notify supported mods of changes
 local function notify_change(pos1, pos2)
     if has_blockexchange then
@@ -39,7 +26,8 @@ minetest.register_tool("pick_and_place:place", {
         local controls = player:get_player_control()
 
         local meta = itemstack:get_meta()
-        local pos1, pos2 = get_pos(meta, player)
+        local size = minetest.string_to_pos(meta:get_string("size"))
+        local pos1, pos2 = pick_and_place.get_placement_pos(size, player)
 
         if controls.aux1 then
             -- removal
@@ -85,7 +73,8 @@ minetest.register_tool("pick_and_place:place", {
         local controls = player:get_player_control()
 
         local meta = itemstack:get_meta()
-        local pos1, pos2 = get_pos(meta, player)
+        local size = minetest.string_to_pos(meta:get_string("size"))
+        local pos1, pos2 = pick_and_place.get_placement_pos(size, player)
 
         if controls.aux1 then
             -- removal preview

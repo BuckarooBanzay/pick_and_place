@@ -26,6 +26,7 @@ dofile(MP .. "/craft.lua")
 dofile(MP .. "/record.lua")
 dofile(MP .. "/playback.lua")
 dofile(MP .. "/registry.lua")
+dofile(MP .. "/snap.lua")
 
 if minetest.get_modpath("mtt") and mtt.enabled then
 	dofile(MP .. "/configure.spec.lua")
