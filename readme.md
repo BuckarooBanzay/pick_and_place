@@ -59,18 +59,54 @@ Disabling it can be done with `/pnp_snap off`
 
 # Modding api
 
-## pick_and_place.register_on_deserialize(fn)
+## pick_and_place.register_on_place(fn)
 
-register a function callback for after deserialization
+register a function callback for after placement
 
 ```lua
 local mynodeid = minetest.get_content_id("my:node")
-pick_and_place.register_on_deserialize(function(pos1, pos2, nodeids)
- if nodeids[mynodeid] then
-  -- nodeid matches, do something after the schematic has been placed into the world
- end
+pick_and_place.register_on_place(function(pos1, pos2, nodeids)
+    if nodeids[mynodeid] then
+        -- nodeid matches, do something after the schematic has been placed into the world
+    end
 end)
 ```
+
+## pick_and_place.register_on_before_place(fn)
+
+register a function callback for after placement
+
+```lua
+local mynodeid = minetest.get_content_id("my:node")
+pick_and_place.register_on_before_place(function(pos1, pos2, nodeids)
+    if nodeids[mynodeid] then
+        -- nodeid matches, do something before the schematic has been placed into the world
+        -- note: nodeids are from the to-be-placed schematic, not the current world-data
+    end
+end)
+```
+
+
+## pick_and_place.register_on_remove(fn)
+
+register a function callback for after area removal
+
+```lua
+pick_and_place.register_on_remove(function(pos1, pos2, nodeids)
+    -- TODO: cleanup stuff here
+end)
+```
+
+## pick_and_place.register_on_before_remove(fn)
+
+register a function callback for before area removal
+
+```lua
+pick_and_place.register_on_before_remove(function(pos1, pos2, nodeids)
+    -- TODO: cleanup stuff here (nodes and metadata are still present in-world)
+end)
+```
+
 
 # Portability
 

@@ -52,7 +52,8 @@ function pick_and_place.serialize(pos1, pos2)
 end
 
 -- table: fn(pos1, pos2, node_ids)
-local deserialization_callbacks = {}
+local place_callbacks = {}
+local before_place_callbacks = {}
 
 function pick_and_place.deserialize(pos1, schematic, disable_replacements)
     local pos2 = vector.add(pos1, vector.subtract(schematic.size, 1))
@@ -98,6 +99,15 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements)
     end
     end
 
+    for _, fn in ipairs(before_place_callbacks) do
+        fn(pos1, pos2, node_ids)
+    end
+
+    -- set nodeid's and param2
+    manip:set_data(node_data)
+    manip:set_param2_data(param2)
+    manip:write_to_map()
+
     -- set metadata
     for pos_str, meta_table in pairs(schematic.metadata) do
         local pos = minetest.string_to_pos(pos_str)
@@ -106,18 +116,17 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements)
         meta:from_table(meta_table)
     end
 
-    -- set nodeid's and param2
-    manip:set_data(node_data)
-    manip:set_param2_data(param2)
-    manip:write_to_map()
-
-    for _, fn in ipairs(deserialization_callbacks) do
+    for _, fn in ipairs(place_callbacks) do
         fn(pos1, pos2, node_ids)
     end
 
     return true
 end
 
-function pick_and_place.register_on_deserialize(fn)
-    table.insert(deserialization_callbacks, fn)
+function pick_and_place.register_on_place(fn)
+    table.insert(place_callbacks, fn)
+end
+
+function pick_and_place.register_on_before_place(fn)
+    table.insert(before_place_callbacks, fn)
 end
