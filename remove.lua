@@ -40,6 +40,11 @@ function pick_and_place.remove_area(pos1, pos2)
         meta:from_table({})
     end
 
+    local objects = minetest.get_objects_in_area(pos1, pos2)
+    for _, obj in ipairs(objects) do
+        obj:remove()
+    end
+
     for _, fn in ipairs(removal_callbacks) do
         fn(pos1, pos2, node_ids)
     end

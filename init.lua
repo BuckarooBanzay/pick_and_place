@@ -32,6 +32,10 @@ if minetest.get_modpath("travelnet") then
 	dofile(MP .. "/compat/travelnet.lua")
 end
 
+if minetest.get_modpath("display_api") then
+	dofile(MP.."/compat/display_api.lua")
+end
+
 if minetest.get_modpath("mtt") and mtt.enabled then
 	dofile(MP .. "/configure.spec.lua")
 	dofile(MP .. "/create_tool.spec.lua")
