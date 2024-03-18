@@ -4,7 +4,38 @@ local origin_map = {}
 
 -- playername -> size
 local size_map = {}
--- TODO: persistence per player (load on join, save on set)
+
+minetest.register_on_joinplayer(function(player)
+    local meta = player:get_meta()
+    local origin = meta:get_string("pnp_snap_origin")
+    local size = meta:get_string("pnp_snap_size")
+
+    if origin == "" or size == "" then
+        return
+    end
+
+    local playername = player:get_player_name()
+    origin_map[playername] = minetest.string_to_pos(origin)
+    size_map[playername] = minetest.string_to_pos(size)
+end)
+
+local function save(playername)
+    local player = minetest.get_player_by_name(playername)
+    if not player then
+        return
+    end
+
+    local meta = player:get_meta()
+
+    if not origin_map[playername] or not  size_map[playername] then
+        meta:set_string("pnp_snap_origin", "")
+        meta:set_string("pnp_snap_size", "")
+        return
+    end
+
+    meta:set_string("pnp_snap_origin", minetest.pos_to_string(origin_map[playername]))
+    meta:set_string("pnp_snap_size", minetest.pos_to_string(size_map[playername]))
+end
 
 local function snap_axis(axis, origin, size, pos)
     local half_size = math.ceil(size[axis] / 2)
@@ -70,6 +101,8 @@ minetest.register_chatcommand("pnp_snap", {
             origin_map[name] = nil
             size_map[name] = nil
         end
+
+        save(name)
 
         if origin_map[name] then
             return true, "grid set with origin: " .. minetest.pos_to_string(origin_map[name]) ..
