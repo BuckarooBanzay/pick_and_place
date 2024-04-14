@@ -18,3 +18,9 @@ function pick_and_place.sort_pos(pos1, pos2)
         end
         return pos1, pos2
 end
+
+function pick_and_place.get_formatted_size(pos1, pos2)
+        pos2 = pos2 or pos1
+        pos1, pos2 = pick_and_place.sort_pos(pos1, pos2)
+        return minetest.pos_to_string(vector.add(vector.subtract(pos2, pos1), 1))
+end

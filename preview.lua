@@ -2,7 +2,7 @@
 -- playername => key
 local active_preview = {}
 
-function pick_and_place.show_preview(playername, texture, color, pos1, pos2)
+function pick_and_place.show_preview(playername, texture, color, pos1, pos2, text)
 	pos2 = pos2 or pos1
 	texture = texture .. "^[colorize:" .. color
 
@@ -11,7 +11,8 @@ function pick_and_place.show_preview(playername, texture, color, pos1, pos2)
 	local key =
 		minetest.pos_to_string(pos1) .. "/" ..
 		minetest.pos_to_string(pos2) .. "/" ..
-		texture
+		texture .. "/" ..
+		(text or "")
 
 	if active_preview[playername] == key then
 		-- already active on the same region
@@ -28,6 +29,7 @@ function pick_and_place.show_preview(playername, texture, color, pos1, pos2)
 	local ent = pick_and_place.add_entity(origin, key)
 	ent:set_properties({
 		visual_size = visual_size,
+		nametag = text,
 		textures = {
 			texture,
 			texture,

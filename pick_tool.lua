@@ -32,10 +32,12 @@ minetest.register_tool("pick_and_place:pick", {
     on_step = function(_, player)
         local playername = player:get_player_name()
         local pointed_pos = pick_and_place.get_pointed_position(player)
+        local pointed_pos2 = pos1[playername]
 
-        if pos1[playername] then
+        if pointed_pos2 then
             -- first position already selected
-            pick_and_place.show_preview(playername, "pick_and_place.png", "#00ff00", pointed_pos, pos1[playername])
+            local text = pick_and_place.get_formatted_size(pointed_pos, pointed_pos2)
+            pick_and_place.show_preview(playername, "pick_and_place.png", "#00ff00", pointed_pos, pointed_pos2, text)
         else
             -- nothing selected yet
             pick_and_place.show_preview(playername, "pick_and_place.png", "#00ff00", pointed_pos)
