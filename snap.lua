@@ -65,9 +65,9 @@ function pick_and_place.get_placement_pos(size, player)
     local snap_size = size_map[playername]
     if origin and snap_size then
         -- apply grid-snapping
-        snap_axis("x", origin, size, pos1)
-        snap_axis("y", origin, size, pos1)
-        snap_axis("z", origin, size, pos1)
+        snap_axis("x", origin, snap_size, pos1)
+        snap_axis("y", origin, snap_size, pos1)
+        snap_axis("z", origin, snap_size, pos1)
     end
 
     local pos2 = vector.add(pos1, vector.subtract(size, 1))
