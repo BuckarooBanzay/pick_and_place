@@ -2,6 +2,12 @@
 local node_id_to_name_cache = {}
 local node_ids_rotateable = {}
 
+-- nodes that have facedir-param2 but look weird when rotated
+local orientation_blacklist = {
+	["scifi_nodes:blackdmg"] = true,
+	["scifi_nodes:lighttop"] = true
+}
+
 local wallmounted = {
 	[90]  = {0, 1, 5, 4, 2, 3, 0, 0},
 	[180] = {0, 1, 3, 2, 5, 4, 0, 0},
@@ -79,7 +85,7 @@ function pick_and_place.schematic_orient(node_ids, param2_data, max, rotation)
 					node_id_to_name_cache[node_id] = node_name
 					-- check if param2 is facedir
 					local def = minetest.registered_nodes[node_name]
-					node_ids_rotateable[node_id] = rotate_param2types[def.paramtype2]
+					node_ids_rotateable[node_id] = rotate_param2types[def.paramtype2] and not orientation_blacklist[node_name]
 				end
 
 				if node_ids_rotateable[node_id] then
