@@ -49,7 +49,7 @@ minetest.register_chatcommand("pnp_record_load", {
 
 
 minetest.register_chatcommand("pnp_record", {
-    params = "[origin|start|info|stop|reset|play]",
+    params = "[origin|start|info|pause|reset|play]",
     description = "manages the recording state or plays the current recording",
     func = function(name, param)
         if param == "origin" then
@@ -66,7 +66,7 @@ minetest.register_chatcommand("pnp_record", {
         end
 
         if not origin then
-            return false, "origin not set, please use /pnp_record_origin first"
+            return false, "origin not set, please use '/pnp_record origin' first"
         end
 
         if param == "start" then

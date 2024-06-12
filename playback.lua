@@ -37,6 +37,8 @@ local function playback(ctx)
             -- resolve absolute position
             local abs_pos1 = vector.add(ctx.origin, entry.pos1)
             pick_and_place.deserialize(abs_pos1, schematic)
+        else
+            minetest.chat_send_player(ctx.playername, "pnp playback: template not found: '" .. entry.name .. "'")
         end
     elseif entry.type == "remove" then
         local abs_pos1 = vector.add(ctx.origin, entry.pos1)
