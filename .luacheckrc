@@ -5,5 +5,10 @@ globals = {
 }
 
 read_globals = {
-	"mapsync", "mtt", "blockexchange", "travelnet", "display_api"
+	"mapsync",
+	"mtt",
+	"blockexchange",
+	"travelnet",
+	"display_api",
+	"advtrains"
 }
