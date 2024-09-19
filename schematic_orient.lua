@@ -5,7 +5,8 @@ local node_ids_rotateable = {}
 -- nodes that have facedir-param2 but look weird when rotated
 local orientation_blacklist = {
 	["scifi_nodes:blackdmg"] = true,
-	["scifi_nodes:lighttop"] = true
+	["scifi_nodes:lighttop"] = true,
+	["scifi_nodes:dent"] = true
 }
 
 local wallmounted = {
