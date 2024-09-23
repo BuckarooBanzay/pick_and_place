@@ -49,6 +49,10 @@ minetest.register_node("pick_and_place:replacement", {
 })
 
 function pick_and_place.get_replacement_nodeid(ctx, metadata)
+    if not metadata then
+        return
+    end
+
     local group = metadata.fields.group
     local selected_name
     if group and group ~= "" and ctx[group] then

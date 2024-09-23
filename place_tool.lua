@@ -38,6 +38,7 @@ minetest.register_tool("pick_and_place:place", {
             -- placement
             local disable_replacements = controls.zoom
             local name = meta:get_string("name")
+            local id = meta:get_string("id")
             local rotation = meta:get_int("rotation")
             local encoded_schematic = meta:get_string("schematic")
             local schematic, err = pick_and_place.decode_schematic(encoded_schematic)
@@ -50,7 +51,7 @@ minetest.register_tool("pick_and_place:place", {
                 minetest.chat_send_player(playername, "Placement error: " .. msg)
             else
                 if name ~= "" then
-                    pick_and_place.record_placement(pos1, pos2, rotation, name)
+                    pick_and_place.record_placement(pos1, pos2, rotation, name, id)
                 end
                 notify_change(pos1, pos2)
             end

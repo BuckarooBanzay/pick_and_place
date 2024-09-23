@@ -1,7 +1,7 @@
 local playback_active = false
 
-local function get_cache_key(name, rotation)
-    return name .. "/" .. rotation
+local function get_cache_key(id, rotation)
+    return id .. "/" .. rotation
 end
 
 local function playback(ctx)
@@ -22,9 +22,9 @@ local function playback(ctx)
     end
 
     if entry.type == "place" then
-        local tmpl = pick_and_place.get_template(entry.name)
+        local tmpl = pick_and_place.get_template(entry.id)
         if tmpl then
-            local key = get_cache_key(entry.name, entry.rotation)
+            local key = get_cache_key(entry.id, entry.rotation)
             local schematic = ctx.cache[key]
 
             if not schematic then
@@ -38,7 +38,7 @@ local function playback(ctx)
             local abs_pos1 = vector.add(ctx.origin, entry.pos1)
             pick_and_place.deserialize(abs_pos1, schematic)
         else
-            minetest.chat_send_player(ctx.playername, "pnp playback: template not found: '" .. entry.name .. "'")
+            minetest.chat_send_player(ctx.playername, "pnp playback: template not found: '" .. entry.id .. "'")
         end
     elseif entry.type == "remove" then
         local abs_pos1 = vector.add(ctx.origin, entry.pos1)

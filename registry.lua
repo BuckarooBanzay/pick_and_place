@@ -1,12 +1,12 @@
 
 -- registry of templates
--- name => { pos1 = {}, pos2 = {} }
+-- id => { pos1 = {}, pos2 = {}, name = "" }
 local registry = {}
 
-function pick_and_place.register_template(name, pos1, pos2)
-    registry[name] = { pos1=pos1, pos2=pos2 }
+function pick_and_place.register_template(pos1, pos2, name, id)
+    registry[id] = { pos1=pos1, pos2=pos2, name=name }
 end
 
-function pick_and_place.get_template(name)
-    return registry[name]
+function pick_and_place.get_template(id)
+    return registry[id]
 end

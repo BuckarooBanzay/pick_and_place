@@ -169,7 +169,7 @@ function pick_and_place.record_removal(pos1, pos2)
     end
 end
 
-function pick_and_place.record_placement(pos1, pos2, rotation, name)
+function pick_and_place.record_placement(pos1, pos2, rotation, name, id)
     if not state or not origin then
         return
     end
@@ -184,6 +184,7 @@ function pick_and_place.record_placement(pos1, pos2, rotation, name)
         pos1 = rel_pos1,
         pos2 = rel_pos2,
         rotation = rotation,
-        name = name
+        name = name,
+        id = id
     })
 end

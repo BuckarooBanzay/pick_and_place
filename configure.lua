@@ -49,7 +49,7 @@ end
 function pick_and_place.configure(pos1, pos2, name, id)
     pos1, pos2 = pick_and_place.sort_pos(pos1, pos2)
     id = id or pick_and_place.create_id()
-    pick_and_place.register_template(name, pos1, pos2)
+    pick_and_place.register_template(pos1, pos2, name, id)
 
     for _, cpos in ipairs(pick_and_place.get_outer_corners(pos1, pos2)) do
         local node = minetest.get_node(cpos)

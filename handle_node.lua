@@ -125,7 +125,7 @@ minetest.register_lbm({
 	action = function(pos)
 		local meta = minetest.get_meta(pos)
 		migrate_handle(pos, meta)
-		local pos1, pos2, name = pick_and_place.get_template_data_from_handle(pos, meta)
-		pick_and_place.register_template(name, pos1, pos2)
+		local pos1, pos2, name, id = pick_and_place.get_template_data_from_handle(pos, meta)
+		pick_and_place.register_template(pos1, pos2, name, id)
 	end
 })
