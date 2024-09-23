@@ -1,4 +1,4 @@
-local FORMSPEC_NAME = "pick_and_place:configure"
+local FORMSPEC_NAME = "pick_and_place:configure_tool"
 
 -- playername -> pos (if pos1 selected)
 local pos1 = {}

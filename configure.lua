@@ -1,22 +1,4 @@
 
--- returns the outer corners for the handle nodes
-local function get_outer_corners(pos1, pos2)
-    pos1, pos2 = pick_and_place.sort_pos(pos1, pos2)
-    pos1 = vector.subtract(pos1, 1)
-    pos2 = vector.add(pos2, 1)
-
-    return {
-        { x=pos1.x, y=pos1.y, z=pos1.z },
-        { x=pos1.x, y=pos1.y, z=pos2.z },
-        { x=pos1.x, y=pos2.y, z=pos1.z },
-        { x=pos1.x, y=pos2.y, z=pos2.z },
-        { x=pos2.x, y=pos1.y, z=pos1.z },
-        { x=pos2.x, y=pos1.y, z=pos2.z },
-        { x=pos2.x, y=pos2.y, z=pos1.z },
-        { x=pos2.x, y=pos2.y, z=pos2.z }
-    }
-end
-
 -- true if already in removal function (disables recursion through on_destruct)
 local in_removal = false
 
@@ -47,7 +29,7 @@ function pick_and_place.remove_handles(handle_pos)
     in_removal = true
 
     pos1, pos2 = pick_and_place.sort_pos(pos1, pos2)
-    for _, hpos in ipairs(get_outer_corners(pos1, pos2)) do
+    for _, hpos in ipairs(pick_and_place.get_outer_corners(pos1, pos2)) do
         local hnode = minetest.get_node(hpos)
         if hnode.name == "pick_and_place:handle" then
             local hmeta = minetest.get_meta(hpos)
@@ -64,13 +46,14 @@ function pick_and_place.remove_handles(handle_pos)
 end
 
 -- sets handle nodes where possible
-function pick_and_place.configure(pos1, pos2, name)
+function pick_and_place.configure(pos1, pos2, name, id)
     pos1, pos2 = pick_and_place.sort_pos(pos1, pos2)
+    id = id or pick_and_place.create_id()
     pick_and_place.register_template(name, pos1, pos2)
 
-    for _, cpos in ipairs(get_outer_corners(pos1, pos2)) do
+    for _, cpos in ipairs(pick_and_place.get_outer_corners(pos1, pos2)) do
         local node = minetest.get_node(cpos)
-        if node.name == "air" then
+        if node.name == "air" or node.name == "pick_and_place:handle" then
             minetest.set_node(cpos, { name = "pick_and_place:handle" })
             local meta = minetest.get_meta(cpos)
 
@@ -81,7 +64,8 @@ function pick_and_place.configure(pos1, pos2, name)
             meta:set_string("pos1", minetest.pos_to_string(rel_pos1))
             meta:set_string("pos2", minetest.pos_to_string(rel_pos2))
             meta:set_string("name", name)
-            meta:set_string("infotext", name)
+            meta:set_string("id", id)
+            meta:set_string("infotext", pick_and_place.get_handle_infotext(meta))
         end
     end
 end

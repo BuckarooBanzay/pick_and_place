@@ -7,7 +7,7 @@ mtt.emerge_area(pos1, pos2)
 mtt.register("create_tool and rotate", function(callback)
     minetest.set_node(pos1, { name = "default:mese" })
 
-    local tool = pick_and_place.create_tool(pos1, pos2, "my build")
+    local tool = pick_and_place.create_tool(pos1, pos2, "my build", "1234")
     assert(tool)
     local meta = tool:get_meta()
     assert(meta:get_string("description"))
