@@ -66,6 +66,8 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements)
 	local param2 = manip:get_param2_data()
     local node_ids = {}
 
+    local disabled_metadata_placement = {}
+
     local ctx = {}
     local j = 1
     for z=pos1.z,pos2.z do
@@ -86,8 +88,8 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements)
                 -- set new node
                 node_data[i] = repl_id
                 param2[i] = schematic.param2_data[j]
-                -- clear metadata
-                schematic.metadata[pos_str] = nil
+                -- mark metadata to not deserialize
+                disabled_metadata_placement[pos_str] = true
             end
         elseif nodeid ~= air_cid then
             -- normal placement
@@ -110,10 +112,12 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements)
 
     -- set metadata
     for pos_str, meta_table in pairs(schematic.metadata) do
-        local pos = minetest.string_to_pos(pos_str)
-        local abs_pos = vector.add(pos1, pos)
-        local meta = minetest.get_meta(abs_pos)
-        meta:from_table(meta_table)
+        if not disabled_metadata_placement[pos_str] then
+            local pos = minetest.string_to_pos(pos_str)
+            local abs_pos = vector.add(pos1, pos)
+            local meta = minetest.get_meta(abs_pos)
+            meta:from_table(meta_table)
+        end
     end
 
     for _, fn in ipairs(place_callbacks) do
