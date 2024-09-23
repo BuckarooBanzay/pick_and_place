@@ -1,5 +1,7 @@
 
-pick_and_place = {}
+pick_and_place = {
+	store = minetest.get_mod_storage()
+}
 
 local MP = minetest.get_modpath("pick_and_place")
 dofile(MP .. "/common.lua")
