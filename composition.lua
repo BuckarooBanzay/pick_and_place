@@ -1,11 +1,11 @@
 --[[
-local function serialize_records(records)
-    local serialized_data = minetest.serialize(records)
+local function serialize_composition(composition)
+    local serialized_data = minetest.serialize(composition)
     local compressed_data = minetest.compress(serialized_data, "deflate")
     return minetest.encode_base64(compressed_data)
 end
 
-local function deserialize_records(str)
+local function deserialize_composition(str)
     local compressed_data = minetest.decode_base64(str)
     local serialized_data = minetest.decompress(compressed_data, "deflate")
     return minetest.deserialize(serialized_data)
