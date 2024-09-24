@@ -25,7 +25,7 @@ minetest.register_tool("pick_and_place:composition", {
     end
 })
 
-minetest.register_on_player_receive_fields(function(player, formname)
+minetest.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= FORMSPEC_NAME then
         return false
     end
@@ -35,12 +35,17 @@ minetest.register_on_player_receive_fields(function(player, formname)
         return true
     end
 
-    local meta = itemstack:get_meta()
-    meta:set_string("description", "Composition")
-    meta:set_string("color", "#00ff00")
+    if fields.record then
+        pick_and_place.record_composition(itemstack)
+    elseif fields.pause then
+        pick_and_place.pause_composition(itemstack)
+    elseif fields.play then
+        pick_and_place.play_composition(itemstack)
+    elseif fields.set_origin then
+        pick_and_place.set_composition_origin(itemstack)
+    end
 
     player:set_wielded_item(itemstack)
-    -- TODO
 
     return true
 end)
