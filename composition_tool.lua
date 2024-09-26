@@ -35,14 +35,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return true
     end
 
-    if fields.record then
-        pick_and_place.record_composition(itemstack)
+    local playername = player:get_player_name()
+    if fields.save then
+        pick_and_place.update_composition_fields(itemstack, playername, fields)
+    elseif fields.record then
+        pick_and_place.record_composition(itemstack, playername)
     elseif fields.pause then
-        pick_and_place.pause_composition(itemstack)
+        pick_and_place.pause_composition(itemstack, playername)
     elseif fields.play then
-        pick_and_place.play_composition(itemstack)
+        pick_and_place.play_composition(itemstack, playername)
     elseif fields.set_origin then
-        pick_and_place.set_composition_origin(itemstack)
+        pick_and_place.set_composition_origin(itemstack, playername)
     end
 
     player:set_wielded_item(itemstack)
