@@ -9,16 +9,20 @@ local function playback(ctx)
     ctx.i = ctx.i + 1
 
     -- pick next entry
-    local entry = ctx.recording.entries[ctx.i]
+    local entry = ctx.composition.entries[ctx.i]
     if not entry then
-        minetest.chat_send_player(ctx.playername, "pnp playback done with " .. (ctx.i-1) .. " entries")
+        minetest.chat_send_player(
+            ctx.playername, "composition playback done with " .. (ctx.i-1) .. " entries"
+        )
         playback_active = false
         return
     end
 
     if ctx.i % 10 == 0 then
         -- status update
-        minetest.chat_send_player(ctx.playername, "pnp playback: entry " .. ctx.i .. "/" .. #ctx.recording.entries)
+        minetest.chat_send_player(
+            ctx.playername, "composition playback: entry " .. ctx.i .. "/" .. #ctx.composition.entries
+        )
     end
 
     if entry.type == "place" then
@@ -38,7 +42,7 @@ local function playback(ctx)
             local abs_pos1 = vector.add(ctx.origin, entry.pos1)
             pick_and_place.deserialize(abs_pos1, schematic)
         else
-            minetest.chat_send_player(ctx.playername, "pnp playback: template not found: '" .. entry.id .. "'")
+            minetest.chat_send_player(ctx.playername, "composition playback: template not found: '" .. entry.id .. "'")
         end
     elseif entry.type == "remove" then
         local abs_pos1 = vector.add(ctx.origin, entry.pos1)
@@ -51,7 +55,7 @@ local function playback(ctx)
     minetest.after(0, playback, ctx)
 end
 
-function pick_and_place.start_playback(playername, origin, recording)
+function pick_and_place.start_playback(playername, origin, composition)
     if playback_active then
         return false, "playback already running"
     end
@@ -59,7 +63,7 @@ function pick_and_place.start_playback(playername, origin, recording)
     playback({
         playername = playername,
         origin = origin,
-        recording = recording,
+        composition = composition,
         i = 0,
         cache = {}
     })

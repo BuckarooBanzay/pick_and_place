@@ -54,7 +54,7 @@ function pick_and_place.configure(pos1, pos2, name, id)
     for _, cpos in ipairs(pick_and_place.get_outer_corners(pos1, pos2)) do
         local node = minetest.get_node(cpos)
         if node.name == "air" or node.name == "pick_and_place:handle" then
-            minetest.set_node(cpos, { name = "pick_and_place:handle" })
+            minetest.swap_node(cpos, { name = "pick_and_place:handle" })
             local meta = minetest.get_meta(cpos)
 
             -- relative positions
