@@ -47,6 +47,7 @@ minetest.register_tool("pick_and_place:composition", {
         pick_and_place.update_composition_tool(meta)
         local playername = player:get_player_name()
         minetest.show_formspec(playername, FORMSPEC_NAME, get_formspec(player, meta))
+        return itemstack
     end
 })
 
