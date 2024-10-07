@@ -68,22 +68,13 @@ end
 
 local function update(itemstack, playername, state)
     local meta = itemstack:get_meta()
-    local name = meta:get_string("name")
+    pick_and_place.update_composition_tool(meta)
     local id = meta:get_string("id")
-    if id == "" then
-        -- initialize
-        id = pick_and_place.create_id()
-        meta:set_string("id", id)
-    end
-
-    local data = meta:get_string("data")
-    local bytes = #data
-    local entries = meta:get_int("entries")
 
     if state then
         meta:set_string("state", state)
         if state == "play" then
-            meta:set_string("color", "#00ff00") -- green
+            print("playback")
             -- TODO: defer playback somewhere
         elseif state == "record" then
             meta:set_string("color", "#ff0000") -- red
@@ -95,6 +86,22 @@ local function update(itemstack, playername, state)
     end
 
     -- TODO: check state
+    pick_and_place.update_composition_tool(meta)
+end
+
+function pick_and_place.update_composition_tool(meta)
+    local id = meta:get_string("id")
+    if id == "" then
+        -- initialize
+        id = pick_and_place.create_id()
+        meta:set_string("id", id)
+    end
+
+    local name = meta:get_string("name")
+    local data = meta:get_string("data")
+    local bytes = #data
+    local entries = meta:get_int("entries")
+
     local desc = string.format("Composition tool '%s' (id: %s, %d entries, %d bytes)", name, id, entries, bytes)
     meta:set_string("description", desc)
 end
@@ -118,5 +125,27 @@ function pick_and_place.play_composition(itemstack, playername)
 end
 
 function pick_and_place.set_composition_origin(itemstack, playername)
-    -- TODO
+    local player = minetest.get_player_by_name(playername)
+    if not player then
+        return
+    end
+    local pos = vector.round(player:get_pos())
+    local meta = itemstack:get_meta()
+    meta:set_string("origin", minetest.pos_to_string(pos))
+end
+
+function pick_and_place.tp_composition_origin(itemstack, playername)
+    local player = minetest.get_player_by_name(playername)
+    if not player then
+        return
+    end
+
+    local meta = itemstack:get_meta()
+    local origin = meta:get_string("origin")
+    local pos = minetest.string_to_pos(origin)
+    if not pos then
+        return
+    end
+
+    player:set_pos(pos)
 end
