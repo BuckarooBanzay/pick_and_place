@@ -250,7 +250,9 @@ function pick_and_place.record_placement(playername, pos1, pos2, rotation, name,
     local tool_id = meta:get_string("id")
     local origin = minetest.string_to_pos(meta:get_string("origin"))
     if not origin then
-        return
+        -- set origin to pos1
+        origin = vector.copy(pos1)
+        meta:set_string("origin", minetest.pos_to_string(origin))
     end
 
     local composition = compositions[tool_id]
