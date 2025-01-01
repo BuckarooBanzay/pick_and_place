@@ -31,8 +31,10 @@ local function get_formspec(_, meta)
         label[2,3.5;]] .. "Not active" .. [[]
 
         label[0.1,4.5;Actions]
-        button_exit[2,4;4,1;]] .. (state == "record" and "pause;Pause" or "record;Record") .. [[]
-        button_exit[6,4;4,1;playback;Playback]
+        button_exit[2,4;2,1;]] .. (state == "record" and "pause;Pause" or "record;Record") .. [[]
+        button_exit[4,4;2,1;playback;Playback]
+        button_exit[6,4;2,1;mark_area;Mark Area]
+        button_exit[8,4;2,1;duplicate;Duplicate]
     ]]
 end
 
@@ -74,7 +76,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         pick_and_place.set_composition_origin(itemstack, playername)
     elseif fields.tp_origin then
         pick_and_place.tp_composition_origin(itemstack, playername)
-
+    elseif fields.mark_area then
+        pick_and_place.mark_composition_area(itemstack, playername)
+    elseif fields.duplicate then
+        pick_and_place.duplicate_composition_tool(itemstack, playername)
     end
 
     player:set_wielded_item(itemstack)

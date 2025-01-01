@@ -144,6 +144,51 @@ function pick_and_place.play_composition(itemstack, playername)
     end
 end
 
+function pick_and_place.mark_composition_area(itemstack, playername)
+    local meta = itemstack:get_meta()
+    local origin = minetest.string_to_pos(meta:get_string("origin"))
+    if not origin then
+        return
+    end
+
+    local data = meta:get_string("data")
+    if not data then
+        return
+    end
+
+    local composition = deserialize_composition(data)
+    if not composition then
+        return
+    end
+
+    if not minetest.get_modpath("worldedit") then
+        return
+    end
+
+    if composition.min_pos then
+        local pos1 = vector.add(origin, composition.min_pos)
+        worldedit.pos1[playername] = pos1
+        worldedit.mark_pos1(playername);
+    end
+
+    if composition.max_pos then
+        local pos2 = vector.add(origin, composition.max_pos)
+        worldedit.pos2[playername] = pos2
+        worldedit.mark_pos2(playername);
+    end
+end
+
+function pick_and_place.duplicate_composition_tool(itemstack, playername)
+    itemstack = ItemStack(itemstack)
+    local meta = itemstack:get_meta()
+    meta:set_string("id", pick_and_place.create_id())
+    pick_and_place.update_composition_tool(meta)
+
+    local player = minetest.get_player_by_name(playername)
+    local inv = player:get_inventory()
+    inv:add_item("main", itemstack)
+end
+
 function pick_and_place.set_composition_origin(itemstack, playername)
     local player = minetest.get_player_by_name(playername)
     if not player then
