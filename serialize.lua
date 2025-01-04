@@ -1,5 +1,8 @@
 local air_cid = minetest.get_content_id("air")
-local replacement_cid = minetest.get_content_id("pick_and_place:replacement")
+local replacement_cids = {
+    [minetest.get_content_id("pick_and_place:replacement")] = true,
+    [minetest.get_content_id("pick_and_place:replacement_wallmounted")] = true
+}
 
 function pick_and_place.serialize(pos1, pos2)
     local manip = minetest.get_voxel_manip()
@@ -77,7 +80,7 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements)
         local nodeid = schematic.node_id_data[j]
         node_ids[nodeid] = true
 
-        if nodeid == replacement_cid and not disable_replacements then
+        if replacement_cids[nodeid] and not disable_replacements then
             -- replacement placement
             local abs_pos = {x=x, y=y, z=z}
             local rel_pos = vector.subtract(abs_pos, pos1)

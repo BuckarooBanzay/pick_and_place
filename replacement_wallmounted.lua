@@ -12,21 +12,26 @@ local function update_formspec(meta)
         listring[]
     ]])
 
-    local txt = "Replacement node"
+    local txt = "Replacement node wallmounted"
     if group and group ~= "" then
         txt = txt .. " (group: '" .. group .. "')"
     end
     meta:set_string("infotext", txt)
 end
 
-minetest.register_node("pick_and_place:replacement", {
-	description = "Replacement node",
+minetest.register_node("pick_and_place:replacement_wallmounted", {
+	description = "Replacement node wallmounted",
 	tiles = {"pick_and_place.png^[colorize:#ff0000"},
-    drawtype = "allfaces",
+    drawtype = "signlike",
     use_texture_alpha = "blend",
     paramtype = "light",
-    paramtype2 = "facedir",
+    paramtype2 = "wallmounted",
+    walkable = false,
+	climbable = true,
     sunlight_propagates = true,
+    selection_box = {
+		type = "wallmounted"
+    },
 	groups = {
 		oddly_breakable_by_hand = 3
 	},
