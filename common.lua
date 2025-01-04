@@ -49,3 +49,45 @@ function pick_and_place.get_outer_corners(pos1, pos2)
                 { x=pos2.x, y=pos2.y, z=pos2.z }
         }
 end
+
+
+function pick_and_place.get_replacement_nodeid(ctx, metadata)
+    local group = metadata.fields.group
+    local selected_name
+    if group and group ~= "" and ctx[group] then
+        -- group placement
+        selected_name = metadata.inventory.main[ctx[group]]
+    else
+        -- random placement
+        local replacement_names = {}
+        for _, name in ipairs(metadata.inventory.main) do
+            if name ~= "" then
+                table.insert(replacement_names, name)
+            end
+        end
+
+        if #replacement_names == 0 then
+            -- no replacement
+            return
+        end
+
+        local i = math.random(#replacement_names)
+        selected_name = replacement_names[i]
+
+        -- set group context
+        if group and group ~= "" then
+            ctx[group] = i
+        end
+    end
+
+    local stack = ItemStack(selected_name)
+    local nodename = stack:get_name()
+
+    if not minetest.registered_nodes[nodename] then
+        -- node not found
+        return
+    end
+
+    local nodeid = minetest.get_content_id(nodename)
+    return nodeid
+end
