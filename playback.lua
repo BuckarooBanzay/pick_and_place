@@ -40,7 +40,7 @@ local function playback(ctx)
 
             -- resolve absolute position
             local abs_pos1 = vector.add(ctx.origin, entry.pos1)
-            pick_and_place.deserialize(abs_pos1, schematic)
+            pick_and_place.deserialize(abs_pos1, schematic, false, ctx.playername)
         else
             minetest.chat_send_player(ctx.playername, "composition playback: template not found: '" .. entry.id .. "'")
         end

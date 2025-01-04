@@ -58,7 +58,7 @@ end
 local place_callbacks = {}
 local before_place_callbacks = {}
 
-function pick_and_place.deserialize(pos1, schematic, disable_replacements)
+function pick_and_place.deserialize(pos1, schematic, disable_replacements, playername)
     local pos2 = vector.add(pos1, vector.subtract(schematic.size, 1))
 
     local manip = minetest.get_voxel_manip()
@@ -70,6 +70,7 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements)
     local node_ids = {}
 
     local disabled_metadata_placement = {}
+    local player_replacements = pick_and_place.get_player_replacements(playername)
 
     local ctx = {}
     local j = 1
@@ -78,23 +79,36 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements)
     for x=pos1.x,pos2.x do
         local i = area:index(x,y,z)
         local nodeid = schematic.node_id_data[j]
+        local force_placement = false
         node_ids[nodeid] = true
 
-        if replacement_cids[nodeid] and not disable_replacements then
-            -- replacement placement
-            local abs_pos = {x=x, y=y, z=z}
-            local rel_pos = vector.subtract(abs_pos, pos1)
-            local pos_str = minetest.pos_to_string(rel_pos)
-            local metadata = schematic.metadata[pos_str]
-            local repl_id = pick_and_place.get_replacement_nodeid(ctx, metadata)
-            if repl_id then
-                -- set new node
-                node_data[i] = repl_id
-                param2[i] = schematic.param2_data[j]
-                -- mark metadata to not deserialize
-                disabled_metadata_placement[pos_str] = true
+        if not disable_replacements then
+            -- replacements enabled
+            if replacement_cids[nodeid] then
+                -- replacement-node placement (facedir/wallmounted)
+                local abs_pos = {x=x, y=y, z=z}
+                local rel_pos = vector.subtract(abs_pos, pos1)
+                local pos_str = minetest.pos_to_string(rel_pos)
+                local metadata = schematic.metadata[pos_str]
+                local repl_id = pick_and_place.get_replacement_nodeid(ctx, metadata)
+                if repl_id then
+                    -- set new node
+                    nodeid = repl_id
+                    param2[i] = schematic.param2_data[j]
+                    -- mark metadata to not deserialize
+                    disabled_metadata_placement[pos_str] = true
+                    force_placement = true
+                end
             end
-        elseif nodeid ~= air_cid then
+
+            if player_replacements[nodeid] then
+                -- per player replacement
+                nodeid = player_replacements[nodeid]
+                force_placement = true
+            end
+        end
+
+        if nodeid ~= air_cid or force_placement then
             -- normal placement
             node_data[i] = nodeid
             param2[i] = schematic.param2_data[j]
