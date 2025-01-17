@@ -38,33 +38,14 @@ local function migrate_handle(pos, meta)
 	end
 end
 
-local function on_punch(pos, _, puncher)
-	local itemstack = puncher:get_wielded_item()
-
-	if not itemstack:is_empty() then
-		-- not an empty hand
-		return
-	end
-
-	local meta = minetest.get_meta(pos)
-	migrate_handle(pos, meta)
-
-	local pos1, pos2, name, id = pick_and_place.get_template_data_from_handle(pos, meta)
-	if not pos1 or not pos2 then
-		return
-	end
-
-	itemstack = pick_and_place.create_tool(pos1, pos2, name, id)
-	puncher:set_wielded_item(itemstack)
-end
-
-
 local function get_formspec(meta)
 	return [[
-		size[10,1]
+		size[10,2.5]
 		real_coordinates[true]
-		field[0.1,0.1;7,0.8;name;Name;]] .. meta:get_string("name") .. [[]
-		button_exit[7.1,0.1;2.5,0.8;save;Save]
+		field[0.1,0.4;7,0.8;name;Name;]] .. meta:get_string("name") .. [[]
+		button_exit[7.4,0.4;2.5,0.8;save;Save]
+		button_exit[0.1,1.4;4.8,0.8;mark;Mark with WE]
+		button_exit[5.1,1.4;4.8,0.8;pick;Pick]
 	]]
 end
 
@@ -72,13 +53,9 @@ end
 local fs_pos = {}
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname ~= FORMSPEC_NAME then
-        return false
-    end
-
-    if not fields.save and not fields.key_enter_field then
-        return true
-    end
+	if formname ~= FORMSPEC_NAME then
+		return false
+	end
 
 	local playername = player:get_player_name()
 	local pos = fs_pos[playername]
@@ -87,10 +64,25 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local meta = minetest.get_meta(pos)
-	local pos1, pos2, _, id = pick_and_place.get_template_data_from_handle(pos, meta)
+	local pos1, pos2, name, id = pick_and_place.get_template_data_from_handle(pos, meta)
 
-	-- reconfigure handles
-	pick_and_place.configure(pos1, pos2, fields.name, id)
+	if fields.save then
+		-- reconfigure handles
+		pick_and_place.configure(pos1, pos2, fields.name, id)
+	elseif fields.mark and minetest.get_modpath("worldedit") then
+		worldedit.pos1[playername] = pos1
+		worldedit.pos2[playername] = pos2
+		worldedit.mark_pos1(playername);
+		worldedit.mark_pos2(playername);
+	elseif fields.pick then
+		local itemstack = player:get_wielded_item()
+		if not itemstack:is_empty() then
+			-- not an empty hand
+			return
+		end
+		itemstack = pick_and_place.create_tool(pos1, pos2, name, id)
+		player:set_wielded_item(itemstack)
+	end
 
     return true
 end)
@@ -98,17 +90,16 @@ end)
 minetest.register_node("pick_and_place:handle", {
 	description = "Pick and place handle",
 	tiles = {"pick_and_place.png"},
-    drawtype = "allfaces",
-    use_texture_alpha = "blend",
-    paramtype = "light",
-    sunlight_propagates = true,
+	drawtype = "allfaces",
+	use_texture_alpha = "blend",
+	paramtype = "light",
+	sunlight_propagates = true,
 	on_rightclick = function(pos, _, clicker)
 		local meta = minetest.get_meta(pos)
 		local playername = clicker:get_player_name()
 		fs_pos[playername] = pos
 		minetest.show_formspec(playername, FORMSPEC_NAME, get_formspec(meta))
 	end,
-	on_punch = on_punch,
 	on_destruct = pick_and_place.remove_handles,
 	drop = "",
 	groups = {
