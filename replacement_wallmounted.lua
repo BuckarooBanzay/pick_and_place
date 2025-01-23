@@ -43,25 +43,25 @@ function pick_and_place.convert_to_replacement_wallmounted(pos, node, groupname)
 end
 
 minetest.register_node("pick_and_place:replacement_wallmounted", {
-	description = "Replacement node wallmounted",
-	tiles = {"pick_and_place.png^[colorize:#ff0000"},
+    description = "Replacement node wallmounted",
+    tiles = {"pick_and_place.png^[colorize:#ff0000"},
     drawtype = "signlike",
     use_texture_alpha = "blend",
     paramtype = "light",
     paramtype2 = "wallmounted",
     walkable = false,
-	climbable = true,
+    climbable = true,
     sunlight_propagates = true,
     selection_box = {
-		type = "wallmounted"
+        type = "wallmounted"
     },
-	groups = {
-		oddly_breakable_by_hand = 3,
+    groups = {
+        oddly_breakable_by_hand = 3,
         pnp_replacement_node = 1
-	},
+    },
 
-	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+    on_construct = function(pos)
+        local meta = minetest.get_meta(pos)
         local inv = meta:get_inventory()
         inv:set_size("main", 8)
 
