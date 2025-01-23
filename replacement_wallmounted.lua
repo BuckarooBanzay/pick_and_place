@@ -56,7 +56,8 @@ minetest.register_node("pick_and_place:replacement_wallmounted", {
 		type = "wallmounted"
     },
 	groups = {
-		oddly_breakable_by_hand = 3
+		oddly_breakable_by_hand = 3,
+        pnp_replacement_node = 1
 	},
 
 	on_construct = function(pos)
