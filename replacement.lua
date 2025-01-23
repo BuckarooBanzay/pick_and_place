@@ -49,7 +49,7 @@ minetest.register_on_player_receive_fields(function(player, formname)
     return true
 end)
 
-minetest.register_chatcommand("pnp_replacement", {
+minetest.register_chatcommand("pnp_replace_global", {
     description = "configure per-player global replacements",
     func = function(playername)
         minetest.show_formspec(playername, FORMSPEC_NAME, get_formspec())

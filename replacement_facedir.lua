@@ -19,6 +19,29 @@ local function update_formspec(meta)
     meta:set_string("infotext", txt)
 end
 
+function pick_and_place.convert_to_replacement(pos, node, groupname)
+    node = node or minetest.get_node(pos)
+
+    local meta = minetest.get_meta(pos)
+    meta:set_string("group", groupname)
+
+    if node.name == "pick_and_place:replacement" then
+        -- already replaced, just set new groupname
+        update_formspec(meta)
+        return
+    end
+
+    local itemstack = ItemStack(node.name .. " 1")
+    node.name = "pick_and_place:replacement"
+    minetest.swap_node(pos, node)
+
+    local inv = meta:get_inventory()
+    inv:set_size("main", 8)
+    inv:set_stack("main", 1, itemstack)
+
+    update_formspec(meta)
+end
+
 minetest.register_node("pick_and_place:replacement", {
 	description = "Replacement node",
 	tiles = {"pick_and_place.png^[colorize:#ff0000"},
