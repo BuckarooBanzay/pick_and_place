@@ -1,12 +1,8 @@
-function pick_and_place.create_tool(pos1, pos2, name, id)
-    local size = vector.add(vector.subtract(pos2, pos1), 1)
-
+function pick_and_place.create_tool_from_schematic(schematic, name, id)
     local tool = ItemStack("pick_and_place:place 1")
     local tool_meta = tool:get_meta()
-    tool_meta:set_string("size", minetest.pos_to_string(size))
+    tool_meta:set_string("size", minetest.pos_to_string(schematic.size))
 
-    -- serialize schematic
-    local schematic = pick_and_place.serialize(pos1, pos2)
     local encoded_schematic = pick_and_place.encode_schematic(schematic)
     tool_meta:set_string("schematic", encoded_schematic)
 
@@ -21,6 +17,10 @@ function pick_and_place.create_tool(pos1, pos2, name, id)
     pick_and_place.update_placement_tool_description(tool_meta)
 
     return tool
+end
+
+function pick_and_place.create_tool(pos1, pos2, name, id)
+    return pick_and_place.create_tool_from_schematic(pick_and_place.serialize(pos1, pos2), name, id)
 end
 
 function pick_and_place.update_placement_tool_description(tool_meta)
