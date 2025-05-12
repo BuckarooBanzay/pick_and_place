@@ -4,6 +4,8 @@
 local registry = {}
 
 function pick_and_place.register_template(pos1, pos2, name, category, id)
+    assert(type(name) == "string")
+    assert(type(category) == "string")
     registry[id] = { pos1=pos1, pos2=pos2, name=name, category=category }
 end
 
@@ -19,6 +21,9 @@ function pick_and_place.get_template_categories()
     local list = {}
     local visited = {}
     for _, entry in pairs(registry) do
+        -- defaults
+        entry.category = entry.category or ""
+
         if not visited[entry.category] then
             table.insert(list, entry.category)
             visited[entry.category] = true
