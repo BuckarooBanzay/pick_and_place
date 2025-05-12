@@ -6,7 +6,7 @@ local registry = {}
 function pick_and_place.register_template(pos1, pos2, name, category, id)
     assert(type(name) == "string")
     assert(type(category) == "string")
-    registry[id] = { pos1=pos1, pos2=pos2, name=name, category=category }
+    registry[id] = { pos1=pos1, pos2=pos2, name=name, category=category, id=id }
 end
 
 function pick_and_place.unregister_template(id)
@@ -41,7 +41,7 @@ function pick_and_place.get_templates_by_category(category)
         end
     end
     table.sort(list, function(a,b)
-        return a.category < b.category
+        return a.name < b.name
     end)
     return list
 end
