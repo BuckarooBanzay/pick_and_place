@@ -7,6 +7,7 @@ function pick_and_place.get_template_data_from_handle(pos, meta)
 	local rel_pos1 = minetest.string_to_pos(meta:get_string("pos1"))
 	local rel_pos2 = minetest.string_to_pos(meta:get_string("pos2"))
 	local name = meta:get_string("name")
+	local category = meta:get_string("category") or ""
 	local id = meta:get_string("id")
 	if id == "" then
 		id = pick_and_place.create_id()
@@ -21,7 +22,7 @@ function pick_and_place.get_template_data_from_handle(pos, meta)
 	local pos1 = vector.add(pos, rel_pos1)
 	local pos2 = vector.add(pos, rel_pos2)
 
-	return pos1, pos2, name, id
+	return pos1, pos2, name, category, id
 end
 
 function pick_and_place.get_handle_infotext(meta)
@@ -35,7 +36,7 @@ end
 local function migrate_handle(pos, meta)
 	if meta:get_string("id") == "" then
 		-- legacy node without id, reconfigure
-		local pos1, pos2, name, id = pick_and_place.get_template_data_from_handle(pos, meta)
+		local pos1, pos2, name, _, id = pick_and_place.get_template_data_from_handle(pos, meta)
 		pick_and_place.configure(pos1, pos2, name, id)
 		meta:set_string("infotext", pick_and_place.get_handle_infotext(meta))
 	end
@@ -71,7 +72,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	end
 
 	local meta = minetest.get_meta(pos)
-	local pos1, pos2, name, id = pick_and_place.get_template_data_from_handle(pos, meta)
+	local pos1, pos2, name, _, id = pick_and_place.get_template_data_from_handle(pos, meta)
 
 	if fields.save then
 		-- reconfigure handles
@@ -123,7 +124,7 @@ minetest.register_lbm({
 	action = function(pos)
 		local meta = minetest.get_meta(pos)
 		migrate_handle(pos, meta)
-		local pos1, pos2, name, id = pick_and_place.get_template_data_from_handle(pos, meta)
-		pick_and_place.register_template(pos1, pos2, name, id)
+		local pos1, pos2, name, category, id = pick_and_place.get_template_data_from_handle(pos, meta)
+		pick_and_place.register_template(pos1, pos2, name, category, id)
 	end
 })

@@ -1,14 +1,44 @@
 
 -- registry of templates
--- id => { pos1 = {}, pos2 = {}, name = "" }
+-- id => { pos1 = {}, pos2 = {}, name = "", category = "" }
 local registry = {}
 
-function pick_and_place.register_template(pos1, pos2, name, id)
-    registry[id] = { pos1=pos1, pos2=pos2, name=name }
+function pick_and_place.register_template(pos1, pos2, name, category, id)
+    registry[id] = { pos1=pos1, pos2=pos2, name=name, category=category }
+end
+
+function pick_and_place.unregister_template(id)
+    registry[id] = nil
 end
 
 function pick_and_place.get_template(id)
     return registry[id]
+end
+
+function pick_and_place.get_template_categories()
+    local list = {}
+    local visited = {}
+    for _, entry in pairs(registry) do
+        if not visited[entry.category] then
+            table.insert(list, entry.category)
+            visited[entry.category] = true
+        end
+    end
+    table.sort(list)
+    return list
+end
+
+function pick_and_place.get_templates_by_category(category)
+    local list = {}
+    for _, entry in pairs(registry) do
+        if entry.category == category then
+            table.insert(list, entry)
+        end
+    end
+    table.sort(list, function(a,b)
+        return a.category < b.category
+    end)
+    return list
 end
 
 local function load()
