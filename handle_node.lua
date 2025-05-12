@@ -25,7 +25,10 @@ function pick_and_place.get_template_data_from_handle(pos, meta)
 end
 
 function pick_and_place.get_handle_infotext(meta)
-	return "Handle name: '" .. meta:get_string("name") .. "' id: '" .. meta:get_string("id") .. "'"
+	return "Handle, " ..
+		"Name: '" .. meta:get_string("name") ..
+		"' Category: '" .. meta:get_string("category") ..
+		"' Id: '" .. meta:get_string("id") .. "'"
 end
 
 -- migrate
@@ -40,12 +43,16 @@ end
 
 local function get_formspec(meta)
 	return [[
-		size[10,2.5]
+		size[10,4]
 		real_coordinates[true]
-		field[0.1,0.4;7,0.8;name;Name;]] .. meta:get_string("name") .. [[]
-		button_exit[7.4,0.4;2.5,0.8;save;Save]
-		button_exit[0.1,1.4;4.8,0.8;mark;Mark with WE]
-		button_exit[5.1,1.4;4.8,0.8;pick;Pick]
+
+		field[0.1,0.5;9.8,0.8;name;Name;]] .. meta:get_string("name") .. [[]
+
+		field[0.1,1.7;9.8,0.8;category;Category;]] .. meta:get_string("category") .. [[]
+
+		button_exit[0.1,2.8;3.2,0.8;mark;Mark with WE]
+		button_exit[3.4,2.8;3.2,0.8;pick;Pick]
+		button_exit[6.7,2.8;3.2,0.8;save;Save]
 	]]
 end
 
@@ -68,7 +75,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.save then
 		-- reconfigure handles
-		pick_and_place.configure(pos1, pos2, fields.name, id)
+		pick_and_place.configure(pos1, pos2, fields.name, fields.category, id)
 	elseif fields.mark and minetest.get_modpath("worldedit") then
 		worldedit.pos1[playername] = pos1
 		worldedit.pos2[playername] = pos2

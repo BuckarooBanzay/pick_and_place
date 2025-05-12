@@ -46,9 +46,10 @@ function pick_and_place.remove_handles(handle_pos)
 end
 
 -- sets handle nodes where possible
-function pick_and_place.configure(pos1, pos2, name, id)
+function pick_and_place.configure(pos1, pos2, name, category, id)
     pos1, pos2 = pick_and_place.sort_pos(pos1, pos2)
     id = id or pick_and_place.create_id()
+    category = category or ""
     pick_and_place.register_template(pos1, pos2, name, id)
 
     for _, cpos in ipairs(pick_and_place.get_outer_corners(pos1, pos2)) do
@@ -64,6 +65,7 @@ function pick_and_place.configure(pos1, pos2, name, id)
             meta:set_string("pos1", minetest.pos_to_string(rel_pos1))
             meta:set_string("pos2", minetest.pos_to_string(rel_pos2))
             meta:set_string("name", name)
+            meta:set_string("category", category)
             meta:set_string("id", id)
             meta:set_string("infotext", pick_and_place.get_handle_infotext(meta))
         end

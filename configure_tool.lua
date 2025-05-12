@@ -6,6 +6,10 @@ local pos1 = {}
 -- playername -> pos (if pos2 selected)
 local pos2 = {}
 
+-- previously used name and category for each player
+local player_last_names = {}
+local player_last_categories = {}
+
 minetest.register_tool("pick_and_place:configure", {
     description = "Placement configuration tool",
     inventory_image = "pick_and_place.png^[colorize:#ffffff",
@@ -21,10 +25,13 @@ minetest.register_tool("pick_and_place:configure", {
 
             -- show name input
             minetest.show_formspec(playername, FORMSPEC_NAME, [[
-                size[10,1]
+                size[10,4]
                 real_coordinates[true]
-                field[0.1,0.1;7,0.8;name;Name;]
-                button_exit[7.1,0.1;2.5,0.8;save;Save]
+
+                field[0.1,0.5;9.8,0.8;name;Name;]] .. (player_last_names[playername] or "") .. [[]
+                field[0.1,1.7;9.8,0.8;category;Category;]] .. (player_last_categories[playername] or "") .. [[]
+
+                button_exit[0.1,2.8;9.8,0.8;save;Save]
             ]])
         else
             -- first position selected
@@ -65,9 +72,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     -- configure and unmark
-    pick_and_place.configure(pos1[playername], pos2[playername], fields.name)
+    pick_and_place.configure(pos1[playername], pos2[playername], fields.name, fields.category)
     pos1[playername] = nil
     pos2[playername] = nil
+
+    -- store for next time
+    player_last_names[playername] = fields.name
+    player_last_categories[playername] = fields.category
 
     return true
 end)
