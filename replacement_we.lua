@@ -90,3 +90,38 @@ worldedit.register_command("pnp_replace_add", {
         worldedit.player_notify(playername, count .. " nodes changed")
     end
 })
+
+worldedit.register_command("pnp_set_category", {
+    params = "<category>",
+	description = "Sets the category on all schematic handles in the area",
+	privs = {worldedit=true},
+	require_pos = 2,
+	nodes_needed = check_region,
+    parse = function(param)
+		return true, param
+	end,
+	func = function(playername, new_category)
+        local pos1 = worldedit.pos1[playername]
+        local pos2 = worldedit.pos2[playername]
+        pos1, pos2 = vector.sort(pos1, pos2)
+
+        local list = minetest.find_nodes_in_area(pos1, pos2, "pick_and_place:handle")
+        local visited = {}
+        for _, pos in ipairs(list) do
+            if not visited[minetest.pos_to_string(pos)] then
+                local meta = minetest.get_meta(pos)
+                local handle_pos1, handle_pos2, name, _, id = pick_and_place.get_template_data_from_handle(pos, meta)
+
+                pick_and_place.configure(handle_pos1, handle_pos2, name, new_category, id)
+
+                -- mark all corners as visited
+                local other_positions = pick_and_place.get_outer_corners(handle_pos1, handle_pos2)
+                for _, other_pos in ipairs(other_positions) do
+                    visited[minetest.pos_to_string(other_pos)] = true
+                end
+            end
+        end
+
+        worldedit.player_notify(playername, #list .. " handles re-configured")
+    end
+})
