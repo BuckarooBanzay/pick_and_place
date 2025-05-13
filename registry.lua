@@ -11,6 +11,10 @@ function pick_and_place.get_template(id)
     return registry[id]
 end
 
+function pick_and_place.get_template_size(template)
+    return vector.add(vector.subtract(template.pos2, template.pos1), vector.new(1,1,1))
+end
+
 function pick_and_place.get_template_categories()
     local list = {}
     local visited = {}
