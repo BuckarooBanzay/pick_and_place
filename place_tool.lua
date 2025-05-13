@@ -1,18 +1,5 @@
 local FORMSPEC_NAME = "pick_and_place:place"
 
-local has_mapsync = minetest.get_modpath("mapsync")
-local has_blockexchange = minetest.get_modpath("blockexchange")
-
--- notify supported mods of changes
-local function notify_change(pos1, pos2)
-    if has_blockexchange then
-        blockexchange.mark_changed(pos1, pos2)
-    end
-    if has_mapsync then
-        mapsync.mark_changed(pos1, pos2)
-    end
-end
-
 minetest.register_tool("pick_and_place:place", {
     description = "Placement tool",
     inventory_image = "pick_and_place_plus.png^[colorize:#0000ff",
@@ -33,7 +20,7 @@ minetest.register_tool("pick_and_place:place", {
             -- removal
             pick_and_place.remove_area(pos1, pos2)
             pick_and_place.record_removal(playername, pos1, pos2)
-            notify_change(pos1, pos2)
+            pick_and_place.notify_change(pos1, pos2)
         else
             -- placement
             local disable_replacements = controls.zoom
@@ -53,7 +40,7 @@ minetest.register_tool("pick_and_place:place", {
                 if name ~= "" then
                     pick_and_place.record_placement(playername, pos1, pos2, rotation, name, id)
                 end
-                notify_change(pos1, pos2)
+                pick_and_place.notify_change(pos1, pos2)
             end
         end
     end,

@@ -151,3 +151,9 @@ end
 function pick_and_place.register_on_before_place(fn)
     table.insert(before_place_callbacks, fn)
 end
+
+function pick_and_place.copy_area(pos1, pos2, target_pos1, rotation, playername)
+    local schematic = pick_and_place.serialize(pos1, pos2)
+    pick_and_place.schematic_rotate(schematic, rotation)
+    pick_and_place.deserialize(target_pos1, schematic, false, playername)
+end

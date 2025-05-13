@@ -91,3 +91,16 @@ function pick_and_place.get_replacement_nodeid(ctx, metadata)
     local nodeid = minetest.get_content_id(nodename)
     return nodeid
 end
+
+local has_mapsync = minetest.get_modpath("mapsync")
+local has_blockexchange = minetest.get_modpath("blockexchange")
+
+-- notify supported mods of changes
+function pick_and_place.notify_change(pos1, pos2)
+    if has_blockexchange then
+        blockexchange.mark_changed(pos1, pos2)
+    end
+    if has_mapsync then
+        mapsync.mark_changed(pos1, pos2)
+    end
+end

@@ -3,10 +3,6 @@
 -- id => { pos1 = {}, pos2 = {}, name = "", category = "" }
 local registry = {}
 
-function pick_and_place.register_template(pos1, pos2, name, category, id)
-    registry[id] = { pos1=pos1, pos2=pos2, name=name, category=category }
-end
-
 function pick_and_place.unregister_template(id)
     registry[id] = nil
 end
@@ -15,10 +11,17 @@ function pick_and_place.get_template(id)
     return registry[id]
 end
 
+function pick_and_place.get_template_size(template)
+    return vector.add(vector.subtract(template.pos2, template.pos1), vector.new(1,1,1))
+end
+
 function pick_and_place.get_template_categories()
     local list = {}
     local visited = {}
     for _, entry in pairs(registry) do
+        -- defaults
+        entry.category = entry.category or ""
+
         if not visited[entry.category] then
             table.insert(list, entry.category)
             visited[entry.category] = true
@@ -36,7 +39,7 @@ function pick_and_place.get_templates_by_category(category)
         end
     end
     table.sort(list, function(a,b)
-        return a.category < b.category
+        return a.name < b.name
     end)
     return list
 end
@@ -44,14 +47,40 @@ end
 local function load()
     local json = pick_and_place.store:get_string("registry")
     if json ~= "" then
-        registry = minetest.parse_json(json, {})
+        local list = minetest.parse_json(json, {})
+        local i = 0
+        for id, template in pairs(list) do
+            if template.id and template.name then
+                -- provide defaults
+                template.category = template.category or ""
+                registry[id] = template
+                i = i + 1
+            end
+        end
+        minetest.log("action", "[pick_and_place] loaded " .. i .. " templates from mod-storage")
     end
 end
 
 load()
 
+local save_pending = false
+
 local function save()
     pick_and_place.store:set_string("registry", minetest.write_json(registry))
+    save_pending = false
 end
 
-minetest.register_on_shutdown(save)
+function pick_and_place.register_template(pos1, pos2, name, category, id)
+    registry[id] = {
+        pos1 = pos1,
+        pos2 = pos2,
+        name = name,
+        category = category,
+        id = id
+    }
+
+    if not save_pending then
+        save_pending = true
+        minetest.after(2, save)
+    end
+end
