@@ -6,6 +6,7 @@ globals = {
 }
 
 read_globals = {
+	"isogen",
 	"mapsync",
 	"mtt",
 	"blockexchange",

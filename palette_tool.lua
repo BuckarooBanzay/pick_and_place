@@ -1,5 +1,65 @@
 local FORMSPEC_NAME = "pick_and_place:palette_tool"
 
+local has_isogen = minetest.get_modpath("isogen")
+
+local preview_cache = {} -- id -> png
+
+local function get_template_size(template)
+    return vector.add(vector.subtract(template.pos2, template.pos1), vector.new(1,1,1))
+end
+
+local function get_formspec_template_info(template)
+    if not template then
+        return "label[11,0.5;" .. minetest.colorize("#FF0000", "No template selected") .. "]"
+    end
+
+    local size = get_template_size(template)
+
+    local fs = [[
+        label[10.5,0.5;Category:]
+        label[12,0.5;]] .. minetest.colorize("#00FF00", template.category) .. [[]
+
+        label[14.5,0.5;Position:]
+        label[16,0.5;]] .. minetest.colorize("#00FF00", minetest.pos_to_string(template.pos1)) .. [[]
+
+        label[10.5,1.0;Name:]
+        label[12,1.0;]] .. minetest.colorize("#00FF00", template.name) .. [[]
+
+        button_exit[16,1.0;2,0.5;teleport;Teleport]
+
+        label[10.5,1.5;Size:]
+        label[12,1.5;]] .. minetest.colorize("#00FF00", minetest.pos_to_string(size)) .. [[]
+    ]]
+
+    if has_isogen then
+        local cube_len = 24
+        local png = preview_cache[template.id]
+        if not png then
+            -- create preview and cache
+            png = isogen.draw(template.pos1, template.pos2, {
+                cube_len = cube_len
+            })
+            preview_cache[template.id] = png
+        end
+
+        -- calculate image size and position
+        local width, height = isogen.calculate_image_size(size, cube_len)
+        local max_width = 8
+        local max_height = 6
+        local ratio = math.min(max_width/width, max_height/height)
+        height = height * ratio
+        width = width * ratio
+        local img_offset_x = (8 - width) / 2
+
+        fs = fs .. [[
+            image[]] .. (11 + img_offset_x) .. [[,2;]] .. width .. "," .. height ..
+                [[;[png:]] .. minetest.encode_base64(png) .. [[]
+        ]]
+    end
+
+    return fs
+end
+
 local function get_formspec(meta)
     -- category selection
     local selected_category = meta:get_string("category")
@@ -21,22 +81,31 @@ local function get_formspec(meta)
 
     local templates = pick_and_place.get_templates_by_category(selected_category)
     local template_names = {}
+    local selected_template = templates[1]
 
     for i, template in ipairs(templates) do
         if selected_name == template.name then
             selected_name_index = i
+            selected_template = template
         end
-        table.insert(template_names, template.name)
+        local sanitized_name = string.gsub(template.name, ",", " ")
+        table.insert(template_names, sanitized_name)
     end
 
     local template_name_list = table.concat(template_names, ",")
 
+
     return [[
-        size[10,10;]
+        size[20,10;]
         real_coordinates[true]
+
         dropdown[0.1,0.1;9.8,0.9;category;]] .. category_list .. [[;]] .. selected_category_index .. [[;true]
-        textlist[0.1,1.1;9.8,7.7;name;]] .. template_name_list .. [[;]] .. selected_name_index .. [[]
-        button_exit[0.1,9;9.8,0.8;select;Select]
+        textlist[0.1,1.1;9.8,8.7;name;]] .. template_name_list .. [[;]] .. selected_name_index .. [[]
+
+        ]] .. get_formspec_template_info(selected_template) .. [[
+
+        dropdown[10.1,9;4.8,0.9;rotation;No rotation,90°,180°,270°;1;true]
+        button_exit[15,9;4.8,0.8;exit;Exit]
     ]]
 end
 
@@ -57,10 +126,21 @@ minetest.register_tool("pick_and_place:palette", {
         local fs = get_formspec(meta)
         minetest.show_formspec(playername, FORMSPEC_NAME, fs)
     end,
-    on_step = function(_, player)
+    on_step = function(itemstack, player)
+        local meta = itemstack:get_meta()
         local playername = player:get_player_name()
         local pointed_pos = pick_and_place.get_pointed_position(player)
         local text = pick_and_place.get_formatted_size(pointed_pos, nil)
+
+        local id = meta:get_string("id")
+        if not id then
+            return
+        end
+
+        local template = pick_and_place.get_template(id)
+        if not template then
+            return
+        end
 
         -- update preview
         pick_and_place.show_preview(
@@ -88,16 +168,17 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         return true
     end
 
+    print(dump(fields))
+
     local playername = player:get_player_name()
     local meta = itemstack:get_meta()
 
-    if fields.select then
+    if fields.exit or fields.quit then
         -- already selected
         return true
     elseif fields.name then
         -- set name
         local parts = fields.name:split(":")
-        print(dump(parts))
         if parts[1] == "CHG" and #parts == 2 then
             local selected = tonumber(parts[2]) or 1
             local category = meta:get_string("category")
@@ -121,9 +202,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             meta:set_string("id", templates[1].id)
         end
 
-        -- show new formspec
-        local fs = get_formspec(meta)
-        minetest.show_formspec(playername, FORMSPEC_NAME, fs)
+    elseif fields.rotation then
+        -- TODO
     end
 
     -- update description
@@ -131,7 +211,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         meta:get_string("category"), meta:get_string("name"), meta:get_string("id"))
     meta:set_string("description", desc)
 
+    -- update palette tool
     player:set_wielded_item(itemstack)
+
+    -- show new formspec
+    local fs = get_formspec(meta)
+    minetest.show_formspec(playername, FORMSPEC_NAME, fs)
 
     return true
 end)
