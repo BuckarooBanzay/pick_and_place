@@ -22,6 +22,9 @@ function pick_and_place.remove_handles(handle_pos)
         return false, "unexpected metadata"
     end
 
+    local id = meta:get_string("id")
+    pick_and_place.unregister_template(id)
+
     -- resolve to absolute coords
     pos1 = vector.add(pos1, handle_pos)
     pos2 = vector.add(pos2, handle_pos)
