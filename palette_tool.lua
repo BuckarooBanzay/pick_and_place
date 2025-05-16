@@ -116,7 +116,7 @@ local function get_formspec(meta, player)
         ]] .. get_formspec_template_info(selected_template) .. [[
 
         dropdown[10.1,9;3.1,0.8;rotation;No rotation,90°,180°,270°;]] .. selected_rotation .. [[;true]
-        button[13.3,9;3.1,0.8;toggle_snap;Grid-snap: ]] .. snap_txt .. [[]
+        button_exit[13.3,9;3.1,0.8;toggle_snap;Grid-snap: ]] .. snap_txt .. [[]
         button_exit[16.7,9;3.1,0.8;exit;Exit]
     ]]
 end
@@ -236,6 +236,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         else
             pick_and_place.enable_snap(player)
         end
+        return true
 
     elseif fields.exit or fields.quit then
         -- already selected
