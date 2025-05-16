@@ -58,7 +58,7 @@ end
 local place_callbacks = {}
 local before_place_callbacks = {}
 
-function pick_and_place.deserialize(pos1, schematic, disable_replacements, playername)
+function pick_and_place.deserialize(pos1, schematic, disable_replacement_nodes, replacements)
     local pos2 = vector.add(pos1, vector.subtract(schematic.size, 1))
 
     local manip = minetest.get_voxel_manip()
@@ -70,7 +70,6 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements, playe
     local node_ids = {}
 
     local disabled_metadata_placement = {}
-    local player_replacements = pick_and_place.get_player_replacements(playername)
 
     local ctx = {}
     local j = 1
@@ -82,7 +81,7 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements, playe
         local force_placement = false
         node_ids[nodeid] = true
 
-        if not disable_replacements then
+        if not disable_replacement_nodes then
             -- replacements enabled
             if replacement_cids[nodeid] then
                 -- replacement-node placement (facedir/wallmounted)
@@ -100,12 +99,12 @@ function pick_and_place.deserialize(pos1, schematic, disable_replacements, playe
                     force_placement = true
                 end
             end
+        end
 
-            if player_replacements[nodeid] then
-                -- per player replacement
-                nodeid = player_replacements[nodeid]
-                force_placement = true
-            end
+        if replacements and replacements[nodeid] then
+            -- per player replacement
+            nodeid = replacements[nodeid]
+            force_placement = true
         end
 
         if nodeid ~= air_cid or force_placement then
@@ -152,8 +151,10 @@ function pick_and_place.register_on_before_place(fn)
     table.insert(before_place_callbacks, fn)
 end
 
-function pick_and_place.copy_area(pos1, pos2, target_pos1, rotation, playername)
+function pick_and_place.copy_area(pos1, pos2, target_pos1, rotation)
     local schematic = pick_and_place.serialize(pos1, pos2)
     pick_and_place.schematic_rotate(schematic, rotation)
-    pick_and_place.deserialize(target_pos1, schematic, false, playername)
+
+    local replacements = pick_and_place.get_replacements()
+    pick_and_place.deserialize(target_pos1, schematic, false, replacements)
 end

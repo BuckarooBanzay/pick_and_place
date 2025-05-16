@@ -2,7 +2,6 @@ local FORMSPEC_NAME = "pick_and_place:composition"
 
 local function get_formspec(_, pos, meta)
     local name = minetest.formspec_escape(meta:get_string("name"))
-    local id = meta:get_string("id")
 
     local data = meta:get_string("data")
     local bytes = #data
@@ -15,25 +14,36 @@ local function get_formspec(_, pos, meta)
         status = minetest.colorize("#00FF00", "Active")
     end
 
+    local inv_location = "nodemeta:" .. pos.x .. "," .. pos.y .. "," .. pos.z
+
     return [[
-        size[10,4]
+        size[12,14]
         real_coordinates[true]
 
-        label[0.1,0.5;Name]
-        field[2,0;6,1;name;;]] .. name .. [[]
-        button_exit[8,0;2,1;save;Save]
+        label[0.1,0.25;Name]
+        field[2,0;8,0.5;name;;]] .. name .. [[]
+        button_exit[10,0;2,0.5;save;Save]
 
-        label[0.1,1.5;Stats]
-        label[2,1.5;]] .. "ID: " .. id .. " Entries: " .. entries .. " / " .. bytes .. " bytes" .. [[]
+        label[0.1,0.75;Status]
+        label[2,0.75;]] ..
+            " Entries: " ..
+            entries .. " / " ..
+            bytes .. " bytes, " ..
+            status ..
+        [[]
 
-        label[0.1,2.5;Status]
-        label[2,2.5;]] .. status .. [[]
+        label[0.1,1.25;Replacements (from -> to)]
+        list[]] .. inv_location .. [[;replacements;0.3,1.5;2,5;0]
+        list[]] .. inv_location .. [[;replacements;3.3,1.5;2,5;10]
+        list[]] .. inv_location .. [[;replacements;6.3,1.5;2,5;20]
+        list[]] .. inv_location .. [[;replacements;9.3,1.5;2,5;30]
+        list[current_player;main;1,8;8,4;]
+        listring[]
 
-        label[0.1,3.5;Actions]
-        button_exit[2,3;2,1;]] .. (active and "pause;Pause" or "record;Record") .. [[]
-        button_exit[4,3;2,1;playback;Playback]
-        button_exit[6,3;2,1;mark_area;Mark Area]
-        button_exit[8,3;2,1;duplicate;Duplicate]
+        button_exit[0,13;3,1;]] .. (active and "pause;Pause" or "record;Record") .. [[]
+        button_exit[3,13;3,1;playback;Playback]
+        button_exit[6,13;3,1;mark_area;Mark Area]
+        button_exit[9,13;3,1;duplicate;Duplicate]
     ]]
 end
 
@@ -41,7 +51,7 @@ end
 local fs_pos = {}
 
 local function copy_metadata(oldmeta, newmeta)
-    for _, key in ipairs({"id", "name", "data", "entries", "description"}) do
+    for _, key in ipairs({"name", "data", "entries", "description"}) do
         newmeta:set_string(key, oldmeta:get_string(key))
     end
 end
@@ -68,8 +78,17 @@ minetest.register_node("pick_and_place:composition", {
         local _, pos = minetest.item_place(itemstack, placer, pointed_thing)
         if pos then
             local meta = minetest.get_meta(pos)
-            copy_metadata(itemstack:get_meta(), meta)
+            local item_meta = itemstack:get_meta()
+            copy_metadata(item_meta, meta)
             pick_and_place.update_composition_node(meta)
+
+            -- deserialize inventory
+            local replacements_inv = meta:get_inventory()
+            local replacements = item_meta:get_string("replacements")
+            for i, r in ipairs(minetest.deserialize(replacements)) do
+                replacements_inv:set_stack("replacements", i, ItemStack(r))
+            end
+
             return pos, ItemStack()
         else
             return
@@ -87,6 +106,14 @@ minetest.register_node("pick_and_place:composition", {
         local itemstack = ItemStack("pick_and_place:composition")
         local meta = itemstack:get_meta()
         copy_metadata(oldmeta, meta)
+
+        -- serialize replacements
+        local oldinv = oldmeta:get_inventory()
+        local replacements = {}
+        for _, r in ipairs(oldinv:get_list("replacements")) do
+            table.insert(replacements, r:to_string())
+        end
+        meta:set_string("replacements", minetest.serialize(replacements))
 
         local remove_node = false
 
@@ -109,6 +136,15 @@ minetest.register_node("pick_and_place:composition", {
         end
 
         return true
+    end,
+    on_metadata_inventory_move = function(pos)
+        pick_and_place.notify_change(pos, pos)
+    end,
+    on_metadata_inventory_put = function(pos)
+        pick_and_place.notify_change(pos, pos)
+    end,
+    on_metadata_inventory_take = function(pos)
+        pick_and_place.notify_change(pos, pos)
     end
 })
 
@@ -139,5 +175,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         pick_and_place.duplicate_composition_node(meta, playername)
     end
 
+    pick_and_place.notify_change(pos, pos)
     return true
 end)

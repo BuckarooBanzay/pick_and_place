@@ -52,21 +52,42 @@ local function load()
 end
 minetest.after(0, load)
 
+function pick_and_place.get_replacements(pos)
+    local replacements = {}
+    pos = pos or active_composition_pos
+    if not pos then
+        return replacements
+    end
+
+    local meta = minetest.get_meta(pos)
+    local inv = meta:get_inventory()
+    local list = inv:get_list("replacements")
+
+    for i=1,#list,2 do
+        local source_name = list[i]:get_name()
+        local target_name = list[i+1]:get_name()
+
+        if source_name ~= "" and
+            target_name ~= "" and
+            minetest.registered_nodes[source_name] and
+            minetest.registered_nodes[target_name] then
+                replacements[minetest.get_content_id(source_name)] = minetest.get_content_id(target_name)
+        end
+    end
+
+    return replacements
+end
 
 function pick_and_place.update_composition_node(meta)
-    local id = meta:get_string("id")
-    if id == "" then
-        -- initialize
-        id = pick_and_place.create_id()
-        meta:set_string("id", id)
-    end
+    local inv = meta:get_inventory()
+    inv:set_size("replacements", 20 * 2)
 
     local name = meta:get_string("name")
     local data = meta:get_string("data")
     local bytes = #data
     local entries = meta:get_int("entries")
 
-    local desc = string.format("Composition '%s' (id: %s, %d entries, %d bytes)", name, id, entries, bytes)
+    local desc = string.format("Composition '%s' (%d entries, %d bytes)", name, entries, bytes)
     meta:set_string("description", desc)
     meta:set_string("infotext", desc)
 end

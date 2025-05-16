@@ -38,7 +38,8 @@ minetest.register_tool("pick_and_place:place", {
                 minetest.chat_send_player(playername, "Decode error: " .. err)
             end
 
-            local success, msg = pick_and_place.deserialize(pos1, schematic, disable_replacements, playername)
+            local replacements = pick_and_place.get_replacements()
+            local success, msg = pick_and_place.deserialize(pos1, schematic, disable_replacements, replacements)
             if not success then
                 minetest.chat_send_player(playername, "Placement error: " .. msg)
             else

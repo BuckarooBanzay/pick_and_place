@@ -128,7 +128,6 @@ minetest.register_tool("pick_and_place:palette", {
     range = 0,
     on_use = function(itemstack, player)
         local meta = itemstack:get_meta()
-        local playername = player:get_player_name()
         local name = meta:get_int("name")
 
         local id = meta:get_string("id")
@@ -160,7 +159,7 @@ minetest.register_tool("pick_and_place:palette", {
             pick_and_place.notify_change(target_pos1, target_pos2)
         else
             -- placement
-            pick_and_place.copy_area(template.pos1, template.pos2, target_pos1, rotation, playername)
+            pick_and_place.copy_area(template.pos1, template.pos2, target_pos1, rotation)
             pick_and_place.notify_change(target_pos1, target_pos2)
             pick_and_place.record_placement(target_pos1, target_pos2, rotation, name, id)
         end
