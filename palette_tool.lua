@@ -151,13 +151,13 @@ minetest.register_tool("pick_and_place:palette", {
         if controls.aux1 then
             -- removal
             pick_and_place.remove_area(target_pos1, target_pos2)
-            pick_and_place.record_removal(playername, target_pos1, target_pos2)
+            pick_and_place.record_removal(target_pos1, target_pos2)
             pick_and_place.notify_change(target_pos1, target_pos2)
         else
             -- placement
             pick_and_place.copy_area(template.pos1, template.pos2, target_pos1, rotation, playername)
             pick_and_place.notify_change(target_pos1, target_pos2)
-            pick_and_place.record_placement(playername, target_pos1, target_pos2, rotation, name, id)
+            pick_and_place.record_placement(target_pos1, target_pos2, rotation, name, id)
         end
     end,
     on_secondary_use = function(itemstack, player)

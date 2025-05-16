@@ -19,7 +19,7 @@ minetest.register_tool("pick_and_place:place", {
         if controls.aux1 then
             -- removal
             pick_and_place.remove_area(pos1, pos2)
-            pick_and_place.record_removal(playername, pos1, pos2)
+            pick_and_place.record_removal(pos1, pos2)
             pick_and_place.notify_change(pos1, pos2)
         else
             -- placement
@@ -38,7 +38,7 @@ minetest.register_tool("pick_and_place:place", {
                 minetest.chat_send_player(playername, "Placement error: " .. msg)
             else
                 if name ~= "" then
-                    pick_and_place.record_placement(playername, pos1, pos2, rotation, name, id)
+                    pick_and_place.record_placement(pos1, pos2, rotation, name, id)
                 end
                 pick_and_place.notify_change(pos1, pos2)
             end
