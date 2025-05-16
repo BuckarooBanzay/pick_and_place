@@ -193,6 +193,7 @@ function pick_and_place.record_removal(pos1, pos2)
     meta:set_string("data", serialize_composition(active_composition))
     pick_and_place.update_composition_node(meta)
     pick_and_place.update_composition_huds()
+    pick_and_place.notify_change(active_composition_pos, active_composition_pos)
 end
 
 function pick_and_place.record_placement(pos1, pos2, rotation, name, id)
@@ -228,4 +229,5 @@ function pick_and_place.record_placement(pos1, pos2, rotation, name, id)
     meta:set_string("data", serialize_composition(active_composition))
     pick_and_place.update_composition_node(meta)
     pick_and_place.update_composition_huds()
+    pick_and_place.notify_change(active_composition_pos, active_composition_pos)
 end
