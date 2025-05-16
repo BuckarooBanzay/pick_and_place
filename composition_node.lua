@@ -16,24 +16,24 @@ local function get_formspec(_, pos, meta)
     end
 
     return [[
-        size[10,5]
+        size[10,4]
         real_coordinates[true]
 
         label[0.1,0.5;Name]
         field[2,0;6,1;name;;]] .. name .. [[]
         button_exit[8,0;2,1;save;Save]
 
-        label[0.1,2.5;Stats]
-        label[2,2.5;]] .. "ID: " .. id .. " Entries: " .. entries .. " / " .. bytes .. " bytes" .. [[]
+        label[0.1,1.5;Stats]
+        label[2,1.5;]] .. "ID: " .. id .. " Entries: " .. entries .. " / " .. bytes .. " bytes" .. [[]
 
-        label[0.1,3.5;Status]
-        label[2,3.5;]] .. status .. [[]
+        label[0.1,2.5;Status]
+        label[2,2.5;]] .. status .. [[]
 
-        label[0.1,4.5;Actions]
-        button_exit[2,4;2,1;]] .. (active and "pause;Pause" or "record;Record") .. [[]
-        button_exit[4,4;2,1;playback;Playback]
-        button_exit[6,4;2,1;mark_area;Mark Area]
-        button_exit[8,4;2,1;duplicate;Duplicate]
+        label[0.1,3.5;Actions]
+        button_exit[2,3;2,1;]] .. (active and "pause;Pause" or "record;Record") .. [[]
+        button_exit[4,3;2,1;playback;Playback]
+        button_exit[6,3;2,1;mark_area;Mark Area]
+        button_exit[8,3;2,1;duplicate;Duplicate]
     ]]
 end
 
