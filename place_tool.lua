@@ -16,6 +16,11 @@ minetest.register_tool("pick_and_place:place", {
         local size = minetest.string_to_pos(meta:get_string("size"))
         local pos1, pos2 = pick_and_place.get_placement_pos(size, player)
 
+        if pick_and_place.is_composition_in_area(pos1, pos2) then
+            minetest.chat_send_player(player:get_player_name(), "Placement denied, an active composition is within")
+            return
+        end
+
         if controls.aux1 then
             -- removal
             pick_and_place.remove_area(pos1, pos2)

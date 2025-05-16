@@ -151,6 +151,13 @@ local function track_min_max_pos(composition, pos)
     end
 end
 
+function pick_and_place.is_composition_in_area(pos1, pos2)
+    if not active_composition_pos then
+        return false
+    end
+    return vector.in_area(active_composition_pos, pos1, pos2)
+end
+
 function pick_and_place.record_removal(pos1, pos2)
     if not active_composition or #active_composition.entries == 0 then
         return

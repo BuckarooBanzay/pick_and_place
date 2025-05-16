@@ -26,9 +26,10 @@ local function check_player_hud(player)
             world_pos = active_pos
         })
 
-    elseif hud_data[playername] then
+    elseif hud_data[playername] and active_pos then
         -- update
         player:hud_change(hud_data[playername], "name", name)
+        player:hud_change(hud_data[playername], "world_pos", active_pos)
 
     end
 end
