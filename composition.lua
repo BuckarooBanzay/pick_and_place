@@ -306,6 +306,10 @@ minetest.register_chatcommand("pnp_composition_move", {
             entry.pos2 = vector.subtract(entry.pos2, offset)
         end
 
+        -- offset min/max pos
+        active_composition.min_pos = vector.subtract(active_composition.min_pos, offset)
+        active_composition.max_pos = vector.subtract(active_composition.max_pos, offset)
+
         -- persist changes
         persist_active_composition()
 
