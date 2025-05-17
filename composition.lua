@@ -52,6 +52,15 @@ local function load()
 end
 minetest.after(0, load)
 
+local function persist_active_composition()
+    local meta = minetest.get_meta(active_composition_pos)
+    meta:set_string("entries", #active_composition.entries)
+    meta:set_string("data", serialize_composition(active_composition))
+    pick_and_place.update_composition_node(meta)
+    pick_and_place.update_composition_huds()
+    pick_and_place.notify_change(active_composition_pos, active_composition_pos)
+end
+
 function pick_and_place.get_replacements(pos)
     local replacements = {}
     pos = pos or active_composition_pos
@@ -216,12 +225,7 @@ function pick_and_place.record_removal(pos1, pos2)
         })
     end
 
-    local meta = minetest.get_meta(active_composition_pos)
-    meta:set_string("entries", #active_composition.entries)
-    meta:set_string("data", serialize_composition(active_composition))
-    pick_and_place.update_composition_node(meta)
-    pick_and_place.update_composition_huds()
-    pick_and_place.notify_change(active_composition_pos, active_composition_pos)
+    persist_active_composition()
 end
 
 function pick_and_place.record_placement(pos1, pos2, rotation, name, id)
@@ -252,10 +256,73 @@ function pick_and_place.record_placement(pos1, pos2, rotation, name, id)
         id = id
     })
 
-    local meta = minetest.get_meta(active_composition_pos)
-    meta:set_string("entries", #active_composition.entries)
-    meta:set_string("data", serialize_composition(active_composition))
-    pick_and_place.update_composition_node(meta)
-    pick_and_place.update_composition_huds()
-    pick_and_place.notify_change(active_composition_pos, active_composition_pos)
+    persist_active_composition()
 end
+
+minetest.register_chatcommand("pnp_composition_move", {
+    params = "[axis] [amount]",
+    privs = { server = true },
+    description = "moves the currently active composition node by this amount (and offsets all placements)",
+    func = function(_, param)
+        -- validate input and state
+        if not active_composition_pos then
+            return false, "no composition active/recording"
+        end
+
+        local _, _, axis, amount_str = string.find(param, "^([^%s]+)%s+(.*)$")
+        if not axis or not amount_str then
+            return false, "missing parameters"
+        end
+
+        local amount = tonumber(amount_str)
+        if not amount or amount > 30000 or amount < -30000 or amount == 0 then
+            return false, "invalid amount"
+        end
+        amount = math.floor(amount)
+
+        -- create offsets
+        local offset
+        if axis == "x" then
+            offset = vector.new(amount, 0, 0)
+        elseif axis == "y" then
+            offset = vector.new(0, amount, 0)
+        elseif axis == "z" then
+            offset = vector.new(0, 0, amount)
+        else
+            return false, "invalid axis"
+        end
+
+        -- prepare metadata
+        local new_pos = vector.add(active_composition_pos, offset)
+        minetest.set_node(new_pos, { name = "pick_and_place:composition" })
+        local new_meta = minetest.get_meta(new_pos)
+        local new_inv = new_meta:get_inventory()
+        local old_meta = minetest.get_meta(active_composition_pos)
+        local old_inv = old_meta:get_inventory()
+
+        -- offset entries
+        for _, entry in ipairs(active_composition.entries) do
+            entry.pos1 = vector.subtract(entry.pos1, offset)
+            entry.pos2 = vector.subtract(entry.pos2, offset)
+        end
+
+        -- persist changes
+        persist_active_composition()
+
+        -- move metadata
+        for _, key in ipairs({"name", "description", "infotext", "data", "entries"}) do
+            new_meta:set_string(key, old_meta:get_string(key))
+        end
+
+        -- move inventory
+        new_inv:set_list("replacements", old_inv:get_list("replacement"))
+
+        -- clear old pos
+        minetest.set_node(active_composition_pos, { name = "air" })
+
+        -- set new pos
+        pick_and_place.set_active_composition_pos(new_pos)
+
+        return true, string.format("moved current composition by %d nodes into the %s axis", amount, axis)
+    end
+})

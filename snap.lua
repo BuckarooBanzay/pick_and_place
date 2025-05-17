@@ -135,6 +135,7 @@ end
 
 minetest.register_chatcommand("pnp_snap", {
     params = "[on|off]",
+    privs = { server = true },
     description = "enable or disable grid snapping with the current placement tool dimensions and origin",
     func = function(name, param)
         local player = minetest.get_player_by_name(name)
