@@ -140,10 +140,17 @@ end
 function pick_and_place.duplicate_composition_node(old_meta, playername)
     local itemstack = ItemStack("pick_and_place:composition")
     local meta = itemstack:get_meta()
-    for _, key in ipairs({"name", "data", "entries"}) do
+    for _, key in ipairs({"name", "data", "entries", "description"}) do
         meta:set_string(key, old_meta:get_string(key))
     end
-    pick_and_place.update_composition_node(meta)
+
+    -- serialize replacements
+    local oldinv = old_meta:get_inventory()
+    local replacements = {}
+    for _, r in ipairs(oldinv:get_list("replacements")) do
+        table.insert(replacements, r:to_string())
+    end
+    meta:set_string("replacements", minetest.serialize(replacements))
 
     local player = minetest.get_player_by_name(playername)
     local inv = player:get_inventory()
