@@ -119,4 +119,10 @@ The schematic data is stored in the tool and may not scale well beyond a certain
 # Licenses
 
 * Code: `MIT`
-* Media: `CC-BY-SA 3.0`
+
+## Assets
+
+* `textures/pick_and_place_rotate_*`
+  * CC BY-SA 3.0 http://www.small-icons.com/packs/16x16-free-toolbar-icons.htm
+
+* Everything else: `CC-BY-SA 3.0`

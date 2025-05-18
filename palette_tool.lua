@@ -115,7 +115,10 @@ local function get_formspec(meta, player)
 
         ]] .. get_formspec_template_info(selected_template) .. [[
 
-        dropdown[10.1,9;3.1,0.8;rotation;No rotation,90°,180°,270°;]] .. selected_rotation .. [[;true]
+        image_button_exit[10.1,9;0.8,0.8;pick_and_place_rotate_ccw.png;rotate_ccw;]
+        dropdown[11.1,9;1.1,0.8;rotation;0°,90°,180°,270°;]] .. selected_rotation .. [[;true]
+        image_button_exit[12.4,9;0.8,0.8;pick_and_place_rotate_cw.png;rotate_cw;]
+
         button_exit[13.3,9;3.1,0.8;toggle_snap;Grid-snap: ]] .. snap_txt .. [[]
         button_exit[16.7,9;3.1,0.8;exit;Exit]
     ]]
@@ -241,6 +244,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             pick_and_place.enable_snap(player)
         end
         return true
+
+    elseif fields.rotate_ccw then
+        local rotation = meta:get_int("rotation")
+        rotation = rotation - 90
+        if rotation < 0 then
+            rotation = 270
+        end
+        meta:set_int("rotation", rotation)
+
+    elseif fields.rotate_cw then
+        local rotation = meta:get_int("rotation")
+        rotation = rotation + 90
+        if rotation > 270 then
+            rotation = 0
+        end
+        meta:set_int("rotation", rotation)
 
     elseif fields.exit or fields.quit then
         -- already selected
