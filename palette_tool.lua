@@ -225,6 +225,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     local playername = player:get_player_name()
     local meta = itemstack:get_meta()
 
+    -- display formspec after fields handling
+    local refresh_fs = true
+
     if fields.teleport then
         local id = meta:get_string("id")
         local template = pick_and_place.get_template(id)
@@ -252,6 +255,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             rotation = 270
         end
         meta:set_int("rotation", rotation)
+        refresh_fs = false
 
     elseif fields.rotate_cw then
         local rotation = meta:get_int("rotation")
@@ -260,6 +264,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             rotation = 0
         end
         meta:set_int("rotation", rotation)
+        refresh_fs = false
 
     elseif fields.exit or fields.quit then
         -- already selected
@@ -311,8 +316,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     player:set_wielded_item(itemstack)
 
     -- show new formspec
-    local fs = get_formspec(meta, player)
-    minetest.show_formspec(playername, FORMSPEC_NAME, fs)
+    if refresh_fs then
+        local fs = get_formspec(meta, player)
+        minetest.show_formspec(playername, FORMSPEC_NAME, fs)
+    end
 
     return true
 end)
