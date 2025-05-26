@@ -33,6 +33,7 @@ dofile(MP .. "/craft.lua")
 dofile(MP .. "/playback.lua")
 dofile(MP .. "/registry.lua")
 dofile(MP .. "/snap.lua")
+dofile(MP .. "/lighting.lua")
 
 if minetest.get_modpath("worldedit_commands") then
 	dofile(MP .. "/replacement_we.lua")
