@@ -52,11 +52,13 @@ pick_and_place.register_on_place(function(pos1, pos2, node_ids)
     local node_data = manip:get_data()
 
     for _, pos in ipairs(poslist) do
-        for y = pos.y-column_range, pos.y do
+        for y = pos.y, pos.y-column_range, -1 do
             local i = area:index(pos.x,y,pos.z)
             -- replace air and column nodes with light node
             if node_data[i] == air_cid or node_data[i] == lighting_column_cid then
                 node_data[i] = lighting_node_cid
+            else
+                break
             end
         end
     end
