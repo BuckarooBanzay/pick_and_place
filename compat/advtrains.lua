@@ -17,9 +17,18 @@ local function get_area_key(pos1, pos2)
     return minetest.pos_to_string(pos1) .. "-" .. minetest.pos_to_string(pos2)
 end
 
+local function has_advtrains_nodes(node_ids)
+    for nodeid in pairs(node_ids) do
+        if advtrains_nodeids[nodeid] then
+            return true
+        end
+    end
+    return false
+end
+
 -- register to be removed nodedb positions
 pick_and_place.register_on_before_remove(function(pos1, pos2, node_ids)
-    if not advtrains_nodeids[node_ids] then
+    if not has_advtrains_nodes(node_ids) then
         -- nothing to do
         return
     end
@@ -45,7 +54,7 @@ end)
 
 -- update all nodedb positions
 pick_and_place.register_on_place(function(pos1, pos2, node_ids)
-    if not advtrains_nodeids[node_ids] then
+    if not has_advtrains_nodes(node_ids) then
         -- nothing to do
         return
     end
