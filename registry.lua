@@ -1,3 +1,4 @@
+local has_mapsync = minetest.get_modpath("mapsync")
 
 -- registry of templates
 -- id => { pos1 = {}, pos2 = {}, name = "", category = "" }
@@ -45,6 +46,12 @@ function pick_and_place.get_templates_by_category(category)
 end
 
 local function load()
+    if has_mapsync then
+        -- mapsync has priority if available, ignore everything else
+        registry = mapsync.load_data("pick_and_place_registry")
+        return
+    end
+
     local json = pick_and_place.store:get_string("registry")
     if json ~= "" then
         local list = minetest.parse_json(json, {})
@@ -61,12 +68,18 @@ local function load()
     end
 end
 
-load()
+minetest.register_on_mods_loaded(load)
 
 local save_pending = false
 
 local function save()
-    pick_and_place.store:set_string("registry", minetest.write_json(registry))
+    if has_mapsync then
+        -- mapsync storage has priority if available
+        mapsync.save_data("pick_and_place_registry", registry)
+    else
+        -- fall back to world-storage
+        pick_and_place.store:set_string("registry", minetest.write_json(registry))
+    end
     save_pending = false
 end
 
