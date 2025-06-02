@@ -48,7 +48,7 @@ end
 local function load()
     if has_mapsync then
         -- mapsync has priority if available, ignore everything else
-        registry = mapsync.load_data("pick_and_place_registry")
+        registry = mapsync.load_data("pick_and_place_registry") or {}
         return
     end
 
