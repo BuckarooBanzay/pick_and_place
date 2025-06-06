@@ -10,6 +10,12 @@ local pos2 = {}
 local player_last_names = {}
 local player_last_categories = {}
 
+-- sets the last used name and category to be used in new configure-handles
+function pick_and_place.set_configure_handle_preset(playername, name, category)
+    player_last_names[playername] = name
+    player_last_categories[playername] = category
+end
+
 minetest.register_tool("pick_and_place:configure", {
     description = "Placement configuration tool",
     inventory_image = "pick_and_place.png^[colorize:#ffffff",

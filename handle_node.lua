@@ -77,6 +77,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.save then
 		-- reconfigure handles
 		pick_and_place.configure(pos1, pos2, fields.name, fields.category, id)
+		pick_and_place.set_configure_handle_preset(playername, fields.name, fields.category)
 	elseif fields.mark and minetest.get_modpath("worldedit") then
 		worldedit.pos1[playername] = pos1
 		worldedit.pos2[playername] = pos2
