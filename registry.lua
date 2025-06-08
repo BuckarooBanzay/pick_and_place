@@ -69,7 +69,7 @@ minetest.register_on_mods_loaded(load)
 local save_pending = false
 
 local function save()
-    if has_mapsync then
+    if has_mapsync and mapsync.autosave then
         -- mapsync storage has priority if available
         mapsync.save_data("pick_and_place_registry", registry)
     else
