@@ -4,10 +4,6 @@ local has_mapsync = minetest.get_modpath("mapsync")
 -- id => { pos1 = {}, pos2 = {}, name = "", category = "" }
 local registry = {}
 
-function pick_and_place.unregister_template(id)
-    registry[id] = nil
-end
-
 function pick_and_place.get_template(id)
     return registry[id]
 end
@@ -83,6 +79,9 @@ local function save()
     save_pending = false
 end
 
+minetest.register_on_shutdown(save)
+
+
 function pick_and_place.register_template(pos1, pos2, name, category, id)
     registry[id] = {
         pos1 = pos1,
@@ -91,6 +90,15 @@ function pick_and_place.register_template(pos1, pos2, name, category, id)
         category = category,
         id = id
     }
+
+    if not save_pending then
+        save_pending = true
+        minetest.after(2, save)
+    end
+end
+
+function pick_and_place.unregister_template(id)
+    registry[id] = nil
 
     if not save_pending then
         save_pending = true
