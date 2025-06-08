@@ -79,9 +79,6 @@ local function save()
     save_pending = false
 end
 
-minetest.register_on_shutdown(save)
-
-
 function pick_and_place.register_template(pos1, pos2, name, category, id)
     registry[id] = {
         pos1 = pos1,
